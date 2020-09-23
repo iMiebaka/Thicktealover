@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+{% block head_title %} Search Result {% endblock %}
+
+<link rel="stylesheet" href="{% static 'css/style_two.css' %}">
+
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="section-title">
+                    <span class="caption d-block small">Search Result</span>
+                    <h2>
+                        {{title}}
+                    </h2>
+                </div>
+                {% for post in posts %}
+                <div class="post-entry-2 d-flex">
+                    <div class="thumbnail order-md-2" style="background-image: url('{{ post.cover_image.url }}')">
+                    </div>
+                    <div class="contents order-md-1 pl-2">
+                        <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' post.author %}">
+                                    {{ post.author.last_name }}
+                                    {{ post.author.first_name }}</a>
+                                in
+                                {% for category in post.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ post.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ post.read_duration }} min
+                                read
+                                {% if post.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+{% endblock javascript %}

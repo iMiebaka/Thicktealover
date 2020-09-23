@@ -1,0 +1,93 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Add Post</h1>
+    </div>
+    <form action="/new/" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.title }}
+        </div>
+
+        <div class="form-group overflow-auto">
+            {{ form.body }}
+            {{ form.media }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_categories" class="col-sm-2 control-label">Category</label>
+            {{ form.categories }}
+        </div>
+
+        <div class="form-group">
+            <label>Document State</label>
+            {{ form.status }}
+        </div>
+
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.favorite }}
+                <label class="form-check-label" for="id_favorite">
+                    Favorite
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <p>
+                <labxel for="id_cover_image">Upload Cover Image: Recommend 730 by 430 </label>
+            </p>
+            {{ form.cover_image }}
+        </div>
+
+        <div class="form-group">
+            <label>Read up Time</label>
+            {{ form.read_duration }}
+        </div>
+
+        <div class="form-group">
+            <label>Tags</label>
+            <input type="text" data-role="tagsinput" class="form-control col-md-6" name="tag_item">
+        </div>
+
+        <div class="form-group">
+            <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $("#id_title").focus();
+</script>
+{% endblock javascript %}

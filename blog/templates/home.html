@@ -1,0 +1,563 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %} Home {% endblock %}
+{% block page_content %}
+
+<div class="site-section py-0">
+    <div class="owl-carousel hero-slide owl-style">
+        {% for fp in featured_blog %}
+        <div class="site-section">
+            <div class="container">
+                <div class="half-post-entry d-block d-lg-flex bg-light">
+                    <div class="img-bg" style="background-image: url('{{ fp.cover_image.url }}')"></div>
+                    <div class="contents">
+                        <span class="caption">Editor's Pick</span>
+                        <h2><a href="{% url 'blog:blog_detail' slug=fp.slug %}">{{ fp.title }}</a></h2>
+                        <p class="mb-3">{{ fp.body | truncatechars_html:339  | safe }}</p>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' fp.author %}">
+                                    {{ fp.author.last_name }}
+                                    {{ fp.author.first_name }}</a>
+                                in
+                                {% for category in fp.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ fp.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ fp.read_duration }} min
+                                read
+                                {% if fp.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-title">
+                            <h2>Editor's Pick</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {% for fav_post in fav_post_solo %}
+                        <div class="post-entry-1">
+                            <img src="{{ fav_post.cover_image.url }}" alt="Image" class="img-fluid">
+                            <h2><a href="{% url 'blog:blog_detail' slug=fav_post.slug %}">{{ fav_post.title }}</a></h2>
+                            <p>{{ fav_post.body | truncatechars_html:120  | safe }}</p>
+
+                            <div class="post-meta">
+                                <span class="d-block">
+                                    <a href="{% url 'blog:blog_author' fav_post.author %}">{{ fav_post.author.last_name }}
+                                        {{ fav_post.author.first_name }}</a>
+                                    in
+                                    {% for category in fav_post.categories.all %}
+                                    <a href="{% url 'blog:blog_category' category.name %}">
+                                        {{ category.name }}</a>
+                                    {% endfor %}
+                                </span>
+                                <span class="date-read">{{ fav_post.created_on.date }} <span
+                                        class="mx-1">&bullet;</span> {{ fav_post.read_duration }} min read <span
+                                        class="icon-star2"></span></span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="post-entry-1">
+                            <a href="post-single.html"><img src="../../static/images/img_h_1.jpg" alt="Image"
+                                    class="img-fluid"></a>
+                            <h2><a href="#">Empty</a></h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi temporibus praesentium
+                                neque, voluptatum quam quibusdam.</p>
+                            <div class="post-meta">
+                                <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                                <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 5 min read <span
+                                        class="icon-star2"></span></span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        {% for fav_post in fav_posts %}
+                        <div class="post-entry-2 d-flex bg-light">
+                            <div class="thumbnail" style="background-image: url('{{ fav_post.cover_image.url }}')">
+                            </div>
+                            <div class="contents">
+                                <h2><a href="{% url 'blog:blog_detail' slug=fav_post.slug %}">{{fav_post.title}}</a>
+                                </h2>
+                                <div class="post-meta">
+                                    <span class="d-block">
+                                        <a href="{% url 'blog:blog_author' fav_post.author %}">{{ fav_post.author.last_name }}
+                                            {{ fav_post.author.first_name }}</a>
+                                        in
+                                        {% for category in fav_post.categories.all %}
+                                        <a href="{% url 'blog:blog_category' category.name %}">
+                                            {{ category.name }}</a>
+                                        {% endfor %}
+                                    </span>
+                                    <span class="date-read">{{ fav_post.created_on.date }} <span
+                                            class="mx-1">&bullet;</span> {{ fav_post.read_duration }} min read
+                                        <span class="icon-star2"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="post-entry-2 d-flex">
+                            <div class="thumbnail" style="background-image: url('../../static/images/img_v_2.jpg')">
+                            </div>
+                            <div class="contents">
+                                <h2><a href="#">Nothing yet</a></h2>
+                                <div class="post-meta">
+                                    <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                                    <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                            class="icon-star2"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                {% if trending_post %}
+                <div class="section-title">
+                    <h2>Trending</h2>
+                </div>
+                {% endif %}
+                {% for trending in trending_post %}
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">0{{forloop.counter}}</div>
+                    <div class="trend-contents">
+                        <h2><a href="{% url 'blog:blog_detail' slug=trending.slug %}">{{ trending.title}}</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' trending.author %}">{{ trending.author.last_name }}
+                                    {{ trending.author.first_name }}</a>
+                                in
+                                {% for category in trending.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ trending.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ trending.read_duration }} min read
+                                {% if trending.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">01</div>
+                    <div class="trend-contents">
+                        <h2><a href="#">Based on favorite and most viewed</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block"><a href="#">Remove during Production</a> in <a href="#">Site
+                                    Architecture</a></span>
+                            <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                    class="icon-star2"></span></span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <p>
+                    <a href="#" class="more">See All Trends <span class="icon-keyboard_arrow_right"></span></a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END section -->
+
+<div class="py-0">
+    <div class="container">
+        <div class="half-post-entry d-block d-lg-flex bg-light">
+            <div class="img-bg" style="background-image: url('{{ featured_blog_single.cover_image.url }}')"></div>
+            <div class="contents">
+                <span class="caption">Editor's Pick</span>
+                <h2><a
+                        href="{% url 'blog:blog_detail' slug=featured_blog_single.slug %}">{{ featured_blog_single.title }}</a>
+                </h2>
+                <p class="mb-3">{{ featured_blog_single.body | truncatechars_html:120  | safe }}</p>
+                <div class="post-meta">
+                    <span class="d-block">
+                        <a href="{% url 'blog:blog_author' featured_blog_single.author %}">
+                            {{ featured_blog_single.author.last_name }}
+                            {{ featured_blog_single.author.first_name }}</a>
+                        in
+                        {% for category in featured_blog_single.categories.all %}
+                        <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                        {% endfor %}
+                    </span>
+                    <span class="date-read">{{ featured_blog_single.created_on.date }} <span
+                            class="mx-1">&bullet;</span>
+                        {{ featured_blog_single.read_duration }} min
+                        read
+                        {% if featured_blog_single.favorite %}
+                        <span class="icon-star2"></span>
+                        {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="section-title">
+                    {% if cat_one_posts|length > 0 %}
+                    <a href="{% url 'blog:blog_category' ran_cat_one_name %}">
+                        <h2>{{ ran_cat_one_name | title }}</h2>
+                    </a>
+                    {% endif %}
+                </div>
+                {% for post in cat_one_posts %}
+                <div class="post-entry-2 d-flex">
+                    <div class="thumbnail" style="background-image: url('{{ post.cover_image.url }}')"></div>
+                    <div class="contents">
+                        <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.last_name }}
+                                    {{ post.author.first_name }}</a>
+                                in
+                                {% for category in post.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ post.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ post.read_duration }} min read
+                                {% if post.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-lg-6">
+                <div class="section-title">
+                    {% if cat_two_posts|length > 0 %}
+                    <h2> <a href="{% url 'blog:blog_category' ran_cat_two_name %}">
+                            {{ ran_cat_two_name | title }}</a></h2>
+                    {% endif %}
+                </div>
+                {% for post in cat_two_posts %}
+                <div class="post-entry-2 d-flex">
+                    <div class="thumbnail" style="background-image: url('{{ post.cover_image.url }}')"></div>
+                    <div class="contents">
+                        <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.last_name }}
+                                    {{ post.author.first_name }}</a>
+                                in
+                                {% for category in post.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ post.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ post.read_duration }} min
+                                read
+                                {% if post.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="section-title">
+                    <h2>Recent News</h2>
+                </div>
+
+
+                {% for post in recents %}
+                <div class="post-entry-2 d-flex">
+                    <div class="thumbnail order-md-2" style="background-image: url('{{ post.cover_image.url }}')">
+                    </div>
+                    <div class="contents order-md-1 pl-2">
+                        <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.last_name }}
+                                    {{ post.author.first_name }}</a>
+                                in
+                                {% for category in post.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ post.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ post.read_duration }} min read
+                                {% if post.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+
+                <div class="post-entry-2 d-flex">
+                    <div class="thumbnail order-md-2" style="background-image: url('../../static/images/img_h_4.jpg')">
+                    </div>
+                    <div class="contents order-md-1 pl-0">
+                        <h2><a href="blog-single.html">Empty</a></h2>
+                        <p class="mb-3">It's super empty.</p>
+                        <div class="post-meta">
+                            <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                            <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                    class="icon-star2"></span></span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="col-lg-3">
+                <div class="section-title">
+                    <h2>Popular Posts</h2>
+                </div>
+                {% for Popular in popular_post %}
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">0{{forloop.counter}}</div>
+                    <div class="trend-contents">
+                        <h2><a href="{% url 'blog:blog_detail' slug=Popular.slug %}">{{ Popular.title}}</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' Popular.author %}">{{ Popular.author.last_name }}
+                                    {{ Popular.author.first_name }}</a>
+                                in
+                                {% for category in Popular.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ Popular.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ Popular.read_duration }} min read
+                                {% if Popular.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">01</div>
+                    <div class="trend-contents">
+                        <h2><a href="#">Empty</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                            <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                    class="icon-star2"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">02</div>
+                    <div class="trend-contents">
+                        <h2><a href="#">Empty</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                            <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                    class="icon-star2"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">03</div>
+                    <div class="trend-contents">
+                        <h2><a href="#">Empty</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                            <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                    class="icon-star2"></span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="trend-entry d-flex pl-0">
+                    <div class="number align-self-start">04</div>
+                    <div class="trend-contents">
+                        <h2><a href="#">Empty</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block"><a href="#">Unknown</a> in <a href="#">News</a></span>
+                            <span class="date-read">Jun 14 <span class="mx-1">&bullet;</span> 3 min read <span
+                                    class="icon-star2"></span></span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <p>
+                    <a href="{% url 'blog:popular_views' %}" class="more">See All Popular <span
+                            class="icon-keyboard_arrow_right"></span></a>
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                {% if recents.has_other_pages %}
+                <ul class="custom-pagination list-unstyled">
+                    {% if recents.has_previous %}
+                    <li><a href="?page={{ recents.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in recents.paginator.page_range %}
+                    {% if recents.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if recents.has_next %}
+                    <li><a href="?page={{ recents.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="site-section subscribe bg-light">
+    <div class="container">
+        <form action="" modelAttribute="api" method="POST" id="add_email_news_letter" class="row align-items-center">
+            {% csrf_token %}
+            <div class="col-md-5 mr-auto">
+                <h2>Newsletter Subcribe</h2>
+                <p>Yes, you can now stay abreast with the latest happening.
+                    We won't go blah, blah, blah on you, trust us!</p>
+            </div>
+            <div class="col-md-6 ml-auto">
+                <div class="d-flex">
+                    <input type="email" class="form-control" placeholder="Enter your email" name="email_newsletter">
+                    <button type="submit" class="btn btn-secondary"><span class="icon-paper-plane"></span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="myToast" class="toast">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="..." class="rounded mr-2" alt="...">
+            <strong class="mr-auto">Bootstrap</strong>
+            <small>11 mins ago</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            Hello World
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $(document).ready(function () {
+        $('#myToast').toast('show')
+    });
+</script>
+
+<script>
+    $("#add_email_news_letter").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:add_newsletter_email" %}',
+            data: serializedData,
+            success: function (data) {
+                if (data.email_registered) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Email already registered',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Congratulations, you will be hearing from us shortly',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        });
+    });
+</script>
+{% endblock javascript %}

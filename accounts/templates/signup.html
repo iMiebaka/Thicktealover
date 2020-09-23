@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block page_content %}
+<div class="site-section bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title mb-5">
+                    <h2>{% block head_title %} Sign Up {% endblock %}</h2>
+                </div>
+                <form method="POST" class="register-form" id="register-form">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            <input type="text" name="name" id="name" required class="form-control form-control-lg"
+                                placeholder="Your Username" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="first_name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            <input type="text" name="first_name" id="first_name" required
+                                class="form-control form-control-lg" placeholder="Your First Name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="last_name"><i class="zmdi"></i></label>
+                            <input type="text" name="last_name" id="first_name" required
+                                class="form-control form-control-lg" placeholder="Your Last Name" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="phone"><i class="zmdi"></i></label>
+                            <input type="tel" name="phone_number" id="phone_number" required
+                                class="form-control form-control-lg" placeholder="Your phone number" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="email"><i class="zmdi zmdi-email"></i></label>
+                            <input type="email" name="email" id="email" required class="form-control form-control-lg"
+                                placeholder="Your Email" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="pass"><i class="zmdi zmdi-lock"></i></label>
+                            <input type="password" name="pass" id="pass" class="form-control form-control-lg"
+                                placeholder="Password" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="re-pass"><i class="zmdi zmdi-lock-outline"></i></label>
+                            <input type="password" name="re_pass" id="re_pass" class="form-control form-control-lg"
+                                placeholder="Repeat your password" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" required />
+                            <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all
+                                statements in <a class="term-service"
+                                    href="{% url 'blog:blog_detail_legal' slug='terms-of-service' %}">Terms of
+                                    service</a></label>
+                        </div>
+                    </div>
+                    <div class="col-3 form-group">
+                        <input type="submit" name="signup" id="signup" class="btn btn-primary py-3 px-5"
+                            value="Register" />
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-6 form-group">
+                        <a href="{% url 'accounts:login' %}" class="signup-image-link">I am already member</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $("#name").focus();
+    $("#name").change(function () {
+        var username = $(this).val();
+        $.ajax({
+            url: '{% url "accounts:validate_username_signup" %}',
+            data: {
+                'username': username
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.user_is_taken) {
+                    // alert("A user with this username already exists.");
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Name does exist',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    $("#signup").attr("disabled", true);
+                }
+                else {
+                    $('#signup').removeAttr("disabled");
+                }
+
+
+            }
+        });
+    });
+    $("#email").change(function () {
+        var email = $(this).val();
+        $.ajax({
+            url: '{% url "accounts:validate_email_signup" %}',
+            data: {
+                'email': email
+            },
+            dataType: 'json',
+            success: function (data) {
+                            if (data.email_is_taken) {
+                                // alert("A user with this username already exists.");
+                                Swal.fire({
+                                    position: 'top-end',
+                                    icon: 'error',
+                                    title: 'Email does exist',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                                $("#signup").attr("disabled", true);
+                            }
+                            else {
+                    $('#signup').removeAttr("disabled");
+                }
+
+
+            }
+        });
+    });
+    $("#pass").change(function () {
+        var password = $(this).val();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "accounts:password_strenght" %}',
+            data: {
+                'password': password,
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                // alert("A user with this username already exists.");
+                console.log(data.ajax_request);
+                if (data.ajax_request) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'info',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        });
+    });
+</script>
+{% endblock javascript %}

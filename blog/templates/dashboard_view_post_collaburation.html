@@ -1,0 +1,72 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Post</h1>
+    </div>
+    {% for post in posts %}
+    <div class="post-entry-2 d-flex">
+        <div class="thumbnail order-md-2" style="background-image: url('{{ post.cover_image.url }}')">
+        </div>
+        <div class="contents order-md-1 pl-2">
+            {% if 'Ready' == post.status %}
+            <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+            {% endif %}
+            {% if 'Draft' == post.status %}
+            <h2><a href="{% url 'blog:pending_blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+            {% endif %}
+            <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+            <div class="post-meta">
+                <span class="d-block">
+                    <a href="{% url 'blog:blog_author' post.author %}">
+                        {{ post.author.last_name }}
+                        {{ post.author.first_name }}</a>
+                    in
+                    {% for category in post.categories.all %}
+                    <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                    {% endfor %}
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'blog:collaburation_edit_blog' slug=post.slug   %}" onclick=""><span
+                            class="btn btn-sm btn-success">Edit</span></a>
+                    {% endif %}
+                </span>
+                <span class="date-read">{{ post.created_on.date }} <span class="mx-1">&bullet;</span>
+                    {{ post.read_duration }} min
+                    read
+                    {% if post.favorite %}
+                    <span class="icon-star2"></span>
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% if posts %}
+    <p></p>
+    {% else %}
+    <div class="text-center d-block">
+        <p class="lead text-gray-800 mb-5">
+            <h2>Nothing to display</h2>
+        </p>
+        <p class="text-gray-500 mb-0">Try checking back soon</p>
+    </div>
+    {% endif %}
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script src="{% static 'js/ swal_django_message.js'  %}"></script>
+{% endfor %}
+{% endif %}
+
+<script>
+
+</script>
+{% endblock javascript %}

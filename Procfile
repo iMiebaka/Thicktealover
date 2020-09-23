@@ -1,0 +1,1 @@
+web: gunicorn mebbscorner.wsgi --log-file -

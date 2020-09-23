@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Check</title>
+
+    
+</head>
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+<link rel="stylesheet" href="../../css/owl.carousel.min.css">
+<link rel="stylesheet" href="../../css/owl.theme.default.min.css">
+<link rel="stylesheet" href="../../css/style.css">
+<link rel="stylesheet" href="../../css/responsive.css">
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+<link rel="stylesheet" href="../../css/bootstrap-select.css">
+
+<script type="text/javascript" src="../../static/js/jquery.min.js"></script>
+<script type="text/javascript" src="../../static/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../static/js/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../static/js/sweetalert2.all.min.js"></script>
+
+<script>
+    Swal.fire({
+    position: 'top-end',
+    icon: tag_alert,
+    title: 'Hello',
+    showConfirmButton: false,
+    timer: 1500
+})
+</script>
+<body style="text-align:center">
+    <h1>Hello World</h1>
+    <h2>
+        Text value property
+    </h2>
+    <input type="text" name="" id="myText" value="Mickey">
+    <input type="text" name="" id="myText2" value="Mickey2">
+    <button type="button" onclick="myfunction()">Try it</button>
+    <!-- <p id="demo"> </p> -->
+    <p></p>
+    <!-- <br> -->
+    <input type="text" name="" id="demo">
+
+    <br>
+    <select id="leaveCode" name="leaveCode" multiple>
+        <option value="10">Annual Leave</option>
+        <option value="11">Medical Leave</option>
+        <option value="14">Long Service</option>
+        <option value="17">Leave Without Pay</option>
+    </select>
+    <script language="javascript" type="text/javascript">
+        document.getElementById('leaveCode').value = '11';
+        document.getElementById('leaveCode').value = '14';
+    </script>
+
+    <script language="javascript" type="text/javascript">
+        function myfunction() {
+            var x = document.getElementById("myText").value;
+            var y = document.getElementById("myText2").value;
+
+            var space = " ^ ";
+            var z = x.concat(space, y);
+            console.log(z);
+            document.getElementById("demo").value = z;
+        }
+    </script>
+
+    <form name="TestForm" action="Video1.php" method="post" onsubmit="return validateForm()">
+        <table>
+            <tr>
+                <th> <input type="checkbox" name="ParticipantSelection[]" value="image1">
+                    <label for="image1">Image 1</label>
+                </th>
+
+                <th><input type="checkbox" name="ParticipantSelection[]" value="image2">
+                </th>
+
+                <th><input type="checkbox" name="ParticipantSelection[]" value="image3">
+                </th>
+            </tr>
+        </table>
+        <input type="hidden" name="AnswerCondition" value="BrowserCheckAnswer" />
+        <div class="form-group">
+            <select class="form-control selectpicker2" multiple="multiple" data-live-search="true" name="extras"
+            required id="id_extras">
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <option value="3">Option 3</option>
+            </select>
+        </div>
+        <button type="submit">Continue</button>
+    </form>
+
+
+
+    <script>
+        var validateForm = function () {
+            var checks = $('input[type="checkbox"]:checked').map(function() {
+                return $(this).val();
+            }).get()
+            // console.log(checks.length());           
+            var selected = $('.selectpicker2 option:selected')
+            .toArray().map(item => item.text);
+            // var selected = $('.selectpicker2').val()
+            console.log(selected);
+            // console.log(checks);
+            var cars = new Array("man")
+            // console.log(cars);
+            cars.push("children");
+            checks.push("children");
+            var opt = document.getElementById('id_extras').options[document.getElementById('id_extras').selectedIndex]   
+            // console.log(opt.text);
+            a = [1];
+            // console.log();
+            // var a = [opt.text, "John"];
+            // console.log(a);
+            //   $('#form').submit();
+            return false;
+        }
+
+// $('#submit').submit(function(e) {
+//   var checks = $('input[type="checkbox"]:checked').map(function() {
+//     return $(this).val();
+//   }).get()
+//   console.log(checks);
+// //   $('#form').submit();
+//   return false;
+// });
+
+    </script>
+</body>
+
+</html>

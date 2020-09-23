@@ -1,0 +1,156 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="section-title mb-5">
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Profile</h1>
+                </div>
+                <form modelAttribute="api" method="POST" class="register-form" id="register-form"
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_username"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            {{ form.username }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="first_name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_last_name"><i class="zmdi"></i></label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_email"><i class="zmdi zmdi-email"></i></label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+
+                    
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_location"><i class="zmdi"></i>Select your countries</label>
+                            {{ form_two.location }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_birth_date"><i class="zmdi"></i></label>
+                            {{ form_two.birth_date }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_cover_image"><i class="zmdi"></i></label>
+                            {{ form_two.cover_image }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_bio"><i class="zmdi"></i></label>
+                            {{ form_two.bio }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_sex"></label>
+                            {{ form_two.sex }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_linkedin"><i class="zmdi"></i></label>
+                            {{ form_three.linkedin }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_twitter"><i class="zmdi"></i></label>
+                            {{ form_three.twitter }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_github"><i class="zmdi"></i></label>
+                            {{ form_three.github }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_whatsapp"><i class="zmdi"></i></label>
+                            {{ form_three.whatsapp }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-check">
+                            {{ form_three.visibility }}
+                            <label class="form-check-label" for="id_visibility">
+                               Show Scocial Platform
+                            </label>
+                        </div>
+                    </div>
+            
+
+                    <div class="col-3 form-group">
+                        <input type="submit" name="signup" id="signup" class="btn btn-primary py-3 px-5"
+                        value="Update" />
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+        {% endblock %}
+
+        {% block javascript %}
+
+        {% if messages %}
+        {% for message in messages %}
+        <script>
+            var tag_alert = '{{ message.tags }}';
+            if (tag_alert == 'alert-success') {
+                tag_alert = 'success';
+            }
+            if (tag_alert == 'alert-danger') {
+                tag_alert = 'error';
+            }
+            Swal.fire({
+                position: 'top-end',
+                icon: tag_alert,
+                title: '{{ message }}',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        </script>
+        {% endfor %}
+        {% endif %}
+
+        {% endblock javascript %}

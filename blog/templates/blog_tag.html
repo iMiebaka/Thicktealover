@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block page_content %}
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="section-title">
+                    <span class="caption d-block small">Categories</span>
+                    <h2>{% block head_title %} {{ category }} {% endblock %}</h2>
+                </div>
+
+                {% for post in posts %}
+                <div class="post-entry-2 d-flex">
+                    <div class="thumbnail order-md-2" style="background-image: url('{{ post.cover_image.url }}')">
+                    </div>
+                    <div class="contents order-md-1 pl-2">
+                        <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
+                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' post.author %}">
+                                    {{ post.author.last_name }}
+                                    {{ post.author.first_name }}</a>
+                                in
+                                {% for category in post.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ post.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ post.read_duration }} min
+                                read
+                                {% if post.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-lg-3">
+                {% if popular_post %}
+                <div class="section-title">
+                    <h2>Popular Posts</h2>
+                </div>
+                {% endif %}
+                {% for Popular in popular_post %}
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">0{{forloop.counter}}</div>
+                    <div class="trend-contents">
+                        <h2><a href="{% url 'blog:blog_detail' slug=Popular.slug %}">{{ Popular.title}}</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' Popular.author %}">{{ Popular.author.last_name }}
+                                    {{ Popular.author.first_name }}</a>
+                                in
+                                {% for category in Popular.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                                <span class="date-read">{{ Popular.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ Popular.read_duration }} min read
+                                {% if Popular.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <p>
+                    <a href="{% url 'blog:popular_views' %}" class="more">See All Popular <span class="icon-keyboard_arrow_right"></span></a>
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                {% if posts.has_other_pages %}
+                <ul class="custom-pagination list-unstyled">
+                    {% if posts.has_previous %}
+                    <li><a href="?page={{ posts.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in posts.paginator.page_range %}
+                    {% if posts.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if posts.has_next %}
+                    <li><a href="?page={{ posts.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="site-section subscribe bg-light">
+    <div class="container">
+        <form action="" modelAttribute="api" method="POST" id="add_email_news_letter"  class="row align-items-center">
+            {% csrf_token %}
+            <div class="col-md-5 mr-auto">
+                <h2>Newsletter Subcribe</h2>
+                <p>Yes, you can now stay abreast with the latest happening.
+                    We won't go blah, blah, blah on you, trust us!</p>
+            </div>
+            <div class="col-md-6 ml-auto">
+                <div class="d-flex">
+                    <input type="email" class="form-control" placeholder="Enter your email"
+                        name="email_newsletter">
+                    <button type="submit" class="btn btn-secondary"><span
+                            class="icon-paper-plane"></span></button>
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $("#add_email_news_letter").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:add_newsletter_email" %}',
+            data: serializedData,
+            success: function (data) {
+                if (data.email_registered) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Email already registered',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Congratulations, you will be hearing from us shortly',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        });
+    });
+</script>
+{% endblock javascript %}

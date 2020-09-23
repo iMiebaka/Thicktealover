@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 single-content">
+                <p class="mb-5">
+                    <img src="{{ post.cover_image.url }}" alt="Cover Image" class="img-fluid">
+                </p>
+                <h1 class="mb-4">
+                    {% block head_title %} {{ post.title }} {% endblock %}
+                </h1>
+                
+                <div class="post-meta d-flex mb-5">
+                <div class="bio-pic mr-3">
+                    <img src="{{ post.author.profile.cover_image.url }}" alt="Author's Image">
+                    </div>
+
+                    <div class="vcard">
+                        <div class="d-block">
+                            <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.get_full_name }}</a>
+                            {% if post.categories.all %}
+                            in
+                            {% for category in post.categories.all %}
+                            <a href="{% url 'blog:blog_category' category.name %}">
+                                {{ category.name }}
+                            </a>
+                            {% if post.categories.all.count > forloop.counter %}
+                            |
+                            {% endif %}    
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if user.is_authenticated %}
+                            {% if edit_post %}
+                            <a href="{% url 'blog:edit_blog' slug=post.slug %}" onclick=""><span
+                                    class="icon-edit btn btn-sm btn-success">Edit</span></a>
+                            <a onclick="ondelete()"><span class="icon-delete btn btn-sm btn-danger">Delete</span></a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <span class="date-read">
+                            <span class="mx-1 icon-calendar"></span> {{ post.created_on.date }}
+                            <span class="mx-1 icon-clock-o"></span>3 min read
+                            {% if post.number_of_views == 0 %}
+                            <span class="mx-1 icon-visibility_off"></span>{{post.number_of_views}}
+                            {% elif post.number_of_views == 1 %}
+                            <span class="mx-1 icon-eye"></span>{{post.number_of_views}} view 
+                            {% else %}
+                            <span class="mx-1 icon-eye"></span>{{post.number_of_views}} views
+                            {% endif %}
+                            {% if post.favorite %}
+                            <span class="mx-1 icon-star2"></span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+
+                <p>{{ post.body | safe }}</p>
+
+                <div class="pt-5">
+                    <p><span class="mx-1 icon-tags"></span> Tags:
+                        {% for tag in post.new_tag.all %}
+                        <a href="{% url 'blog:blog_tag' tag.name %}">
+                            {{ tag.name }}
+                        </a>
+                        {% if post.new_tag.all.count > forloop.counter %}
+                        ,
+                        {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+
+                <hr>
+                <div class="container bootstrap snippets bootdey mb-4">
+                    <div class="col-md-12">
+                        <div class="profile-container">
+                            <div class="section-title">
+                                <h2 class="mb-0">
+                                    Written By:
+                                </h2>
+                            </div>
+                            <div class="profile-header row">
+                                <div class="col-md-4 col-sm-12 text-center">
+                                    <img src="{{ post.author.profile.cover_image.url }}" alt="" class="header-avatar">
+                                </div>
+                                <div class="col-md-8 col-sm-12 profile-info pl-2">
+                                    <div class="header-fullname">{{post.author.get_full_name}}</div>
+                                    <div class="header-information">
+                                        <strong>{{post.author.profile.bio}}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if collab_author %}
+                            {% for c_a in collab_author %}
+                            <div class="profile-header row">
+                                <div class="col-md-4 col-sm-12 text-center">
+                                    <img src="{{ c_a.requested_author.profile.cover_image.url }}" alt=""
+                                        class="header-avatar">
+                                </div>
+                                <div class="col-md-8 col-sm-12 profile-info pl-2">
+                                    <div class="header-fullname">{{c_a.requested_author.get_full_name}}</div>
+                                    <div class="header-information">
+                                        <strong>{{c_a.requested_author.profile.bio}}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+{% endblock javascript %}

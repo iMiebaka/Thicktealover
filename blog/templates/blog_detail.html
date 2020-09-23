@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+{% load static %}
+{% load social_share %}
+
+{% block page_content %}
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 single-content">
+                <p class="mb-5">
+                    <img src="{{ post.cover_image.url }}" alt="Image" class="img-fluid">
+                    <!-- <img  src="{{ post.cover_image.url }}" alt="Image" class="img-fluid"> </p> -->
+                </p>
+                <h1 class="mb-4">
+                    {% block head_title %} {{ post.title }} {% endblock %}
+                </h1>
+                <div class="post-meta d-flex mb-5">
+                    <div class="bio-pic mr-3">
+                        <img src="{{ post.author.profile.cover_image.url }}" alt="Author's Image">
+                        <!-- <img src="{% static 'images/person_1.jpg' %}" alt="Image" class="img-fluidid"> -->
+                    </div>
+                    <div class="vcard">
+                        <div class="d-block">
+                            <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.get_full_name }}</a>
+                            {% if post.categories.all %}
+                            in
+                            {% for category in post.categories.all %}
+                            <a href="{% url 'blog:blog_category' category.name %}">
+                                {{ category.name }}
+                            </a>
+                            {% if post.categories.all.count > forloop.counter %}
+                            |
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if user.is_authenticated %}
+                            {% if edit_post %}
+                            <a href="{% url 'blog:edit_blog' slug=post.slug %}" onclick=""><span
+                                    class="icon-edit btn btn-sm btn-success">Edit</span></a>
+                            <a onclick="ondelete()"><span class="icon-delete btn btn-sm btn-danger">Delete</span></a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <span class="date-read">
+                            <span class="mx-1 icon-calendar"></span> {{ post.created_on.date }}
+                            <span class="mx-1 icon-clock-o"></span>3 min read
+                            {% if post.number_of_views == 0 %}
+                            <span class="mx-1 icon-visibility_off"></span>{{post.number_of_views}}
+                            {% elif post.number_of_views == 1 %}
+                            <span class="mx-1 icon-eye"></span>{{post.number_of_views}} view
+                            {% else %}
+                            <span class="mx-1 icon-eye"></span>{{post.number_of_views}} views
+                            {% endif %}
+                            {% if post.favorite %}
+                            <span class="mx-1 icon-star2"></span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% if settings.DEBUG is False %}
+                Hello
+                {% endif %}
+                <p>{{ post.body | safe }}</p>
+
+                <div class="pt-5">
+                    {% if post.new_tag.all %}
+                    <p><span class="mx-1 icon-tags"></span> Tags:
+                        {% for tag in post.new_tag.all %}
+                        <a href="{% url 'blog:blog_tag' tag.name %}">
+                            {{ tag.name }}
+                        </a>
+                        {% if post.new_tag.all.count > forloop.counter %}
+                        ,
+                        {% endif %}
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="">
+                    <div class="ml-md-auto top-social d-none d-lg-inline-block">
+                        Let Someone know
+                        <div class="row">
+                            <div class="col-md-3">
+                                {% post_to_facebook object_or_url "Post to Facebook!" %}
+                            </div>
+                            <div class="col-md-3">
+                                {% post_to_twitter "{{post.title}}." object_or_url "Post to Twitter" %}
+                            </div>
+                            <div class="col-md-3">
+                                {% post_to_gplus object_or_url "Post to Google+!" %}
+                            </div>
+
+                            <div class="col-md-3">
+                                {% send_email object.title "New Song: {{post.title}}. Check it out!" object_or_url "Share via email" %}
+                            </div>
+                            <div class="col-md-3">
+                                {% post_to_reddit "{{post.title}}" object_or_url %}
+                            </div>
+                            <div class="col-md-3">
+                                {% post_to_telegram "{{post.title}}" object_or_url %}
+                            </div>
+                            <div class="col-md-3">
+                                {% post_to_whatsapp object_or_url "Share via WhatsApp" %}
+                            </div>
+
+                            <!-- <a href="#" class="d-inline-block p-3"><span class="icon-facebook"></span></a>
+                            <a href="#" class="d-inline-block p-3"><span class="icon-whatsapp"></span></a>
+                        <a href="#" class="d-inline-block p-3"><span class="icon-whatsapp"></span></a>
+                        <a href="#" class="d-inline-block p-3"><span class="icon-twitter"></span></a>
+                        <a href="#" class="d-inline-block p-3"><span class="icon-instagram"></span></a> -->
+                        </div>
+                    </div>
+                    {% if commentable is True %}
+                    <div class="pt-5">
+                        {% if comment_total > 0 %}
+                        <div class="section-title">
+                            <h2 class="mb-5"><span class="icon-comments"> </span> {{ comment_total }}
+                                {% if comment_total == 1 %}
+                                Comment </h2>
+                            {% else %}
+                            Comments </h2>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% for comment in comments %}
+                        <ul class="comment-list">
+
+                            <li class="comment">
+                                <div class="vcard bio">
+                                    {% if comment.author_voice %}
+                                    <img src="{{ comment.active_writer_inst.profile.cover_image.url }}"
+                                        alt="Image placeholder">
+                                    {% elif comment.co_author_voice %}
+                                    <img src="{{ comment.active_writer_inst.profile.cover_image.url }}"
+                                        alt="Image placeholder">
+                                    {% elif comment.active_writer %}
+                                    <img src="{{ comment.active_writer_inst.profile.cover_image.url }}"
+                                        alt="Image placeholder">
+                                    {% else %}
+                                    <img src="{% static 'images/default_image.jpg' %}" alt="Image placeholder">
+                                    dkjfkhsdk
+                                    {% endif %}
+                                </div>
+                                <div class="comment-body">
+                                    {% if comment.author_voice or comment.co_author_voice %}
+                                    <p>
+                                    <h3><a>{{ comment.name }}</a> <span class="icon-certificate"></span></h3>
+                                    </p>
+                                    {% else %}
+                                    <h3><a>{{ comment.name }}</a> </h3>
+                                    {% endif %}
+                                    <div class="meta" id="meta">{{ comment.created_on.date }} at
+                                        {{ comment.created_on.time }}</div>
+                                    <p> {{ comment.body|linebreaks|safe }} </p>
+                                    <input type="hidden" id="{{ comment.id }},{{ comment.name }} hidden_val"
+                                        value="{{ comment.name }}">
+                                    <!-- <p><a href="#" class="reply">Reply</a></p> -->
+                                    <button id="abc" class="abc btn btn-primary"
+                                        name="{{ comment.id }},{{ comment.name }}">
+                                        <span class="icon-reply-all"> </span>Reply </button>
+                                </div>
+                            </li>
+                            {% for replay in comment.replies.all %}
+                            <ul class="children">
+                                <li class="comment">
+                                    <div class="vcard bio">
+                                        {% if replay.author_voice %}
+                                        <img src="{{ replay.active_writer_inst.profile.cover_image.url }}"
+                                            alt="Image placeholder">
+                                        {% elif replay.co_author_voice %}
+                                        <img src="{{ replay.active_writer_inst.profile.cover_image.url }}"
+                                            alt="Image placeholder">
+                                        {% elif replay.active_writer %}
+                                        <img src="{{ replay.active_writer_inst.profile.cover_image.url }}"
+                                            alt="Image placeholder">
+                                        {% else %}
+                                        <img src="{% static 'images/default_image.jpg' %}" alt="Image placeholder">
+                                        {% endif %}
+                                    </div>
+                                    <div class="comment-body">
+                                        {% if replay.author_voice or replay.co_author_voice %}
+                                        <p>
+                                        <h3><a class="replying">{{ replay.name }}</a> <span
+                                                class="active icon-certificate"></span></h3>
+                                        </p>
+                                        {% else %}
+                                        <h3><a class="replying">{{ replay.name }}</a></h3>
+                                        {% endif %}
+
+                                        <div class="meta" id="meta">{{ replay.created_on.date }} at
+                                            {{ replay.created_on.time }}</div>
+                                        <p>{{ replay.body | safe}} </p>
+                                        <input type="hidden" id="{{ comment.id }},{{ replay.name }} hidden_val"
+                                            value="{{ replay.name }}">
+                                        <!-- <p><a href="#" class="reply">Reply</a></p> -->
+                                        <button id="abc" class="abc btn btn-primary"
+                                            name="{{ comment.id }},{{ replay.name }}"> <span class="icon-reply-all">
+                                            </span>Reply </button>
+
+                                    </div>
+                                </li>
+                            </ul>
+                            {% endfor %}
+                        </ul>
+                        {% empty %}
+                        <p>
+                        <h4>There are no comments yet.</h4>
+                        </p>
+                        {% endfor %}
+                    </div>
+                    <!-- END comment-list -->
+
+                    <div class="comment-form-wrap pt-5" id="comment_area">
+                        <div class="section-title">
+                            <h2 class="mb-5">Leave a comment</h2>
+                        </div>
+                        <form method="post" action="." class="p-5 bg-light">
+                            {% csrf_token %}
+                            <input type="hidden" id="reply_id_name" name="parent_id" value="">
+                            <input type="hidden" id="reply_name" name="parent_name" value="">
+                            <div class="form-group reply_div" style="display:none">
+                                <div class="alert alert-success" role="alert">
+                                    <label id="label_alert"> </label>
+                                    <button type="button" class="close remove_reply" data-dismiss="alert"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                            {% if user.is_authenticated %}
+                            <div class="form-group">
+                                <h3><a class="form-control replying" name="name">{{ request.user.get_full_name }}</a>
+                                </h3>
+                            </div>
+                            <div class="form-group">
+                                <h3><a class="form-control replying" name="email">{{ user.email }}</a></h3>
+                            </div>
+                            <div class="form-group">
+                                <h3><a class="form-control replying" name="url">www.thicktealovers.com</a></h3>
+                            </div>
+                            <div class="form-group">
+                                {{ comment_form.body }}
+                            </div>
+
+                            {% else %}
+                            <div class="form-group">
+                                {{ comment_form.name }}
+                            </div>
+                            <div class="form-group">
+                                {{ comment_form.email }}
+                            </div>
+                            <div class="form-group">
+                                {{ comment_form.url }}
+                            </div>
+                            <div class="form-group">
+                                {{ comment_form.body }}
+                            </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary py-3"> <span class="icon-speaker_notes">
+                                    </span> Post Comment</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                <hr>
+                <div class="container bootstrap snippets bootdey mb-4">
+                    <div class="col-md-12">
+                        <div class="profile-container">
+                            <div class="section-title">
+                                <h2 class="mb-0">
+                                    Written By:
+                                </h2>
+                            </div>
+                            <div class="profile-header row">
+                                <div class="col-md-4 col-sm-12 text-center">
+                                    <img src="{{ post.author.profile.cover_image.url }}" alt="" class="header-avatar">
+                                </div>
+                                <div class="col-md-8 col-sm-12 profile-info pl-2">
+                                    <div class="header-fullname">{{post.author.get_full_name}}</div>
+                                    <div class="header-information">
+                                        <strong>{{post.author.profile.bio}}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if collab_author %}
+                            {% for c_a in collab_author %}
+                            <div class="profile-header row">
+                                <div class="col-md-4 col-sm-12 text-center">
+                                    <img src="{{ c_a.requested_author.profile.cover_image.url }}" alt=""
+                                        class="header-avatar">
+                                </div>
+                                <div class="col-md-8 col-sm-12 profile-info pl-2">
+                                    <div class="header-fullname">{{c_a.requested_author.get_full_name}}</div>
+                                    <div class="header-information">
+                                        <strong>{{c_a.requested_author.profile.bio}}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 ml-auto">
+                {% if popular_post %}
+                <div class="section-title">
+                    <h2>Popular Posts</h2>
+                </div>
+                {% endif %}
+                {% for Popular in popular_post %}
+                <div class="trend-entry d-flex">
+                    <div class="number align-self-start">0{{forloop.counter}}</div>
+                    <div class="trend-contents">
+                        <h2><a href="{% url 'blog:blog_detail' slug=Popular.slug %}">{{ Popular.title }}</a></h2>
+                        <div class="post-meta">
+                            <span class="d-block">
+                                <a href="{% url 'blog:blog_author' Popular.author %}">{{ Popular.author.last_name }}
+                                    {{ Popular.author.first_name }}</a>
+                                in
+                                {% for category in Popular.categories.all %}
+                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                {% endfor %}
+                            </span>
+                            <span class="date-read">{{ Popular.created_on.date }} <span class="mx-1">&bullet;</span>
+                                {{ Popular.read_duration }} min read
+                                {% if Popular.favorite %}
+                                <span class="icon-star2"></span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <p>
+                    <a href="{% url 'blog:popular_views' %}" class="more">See All Popular <span
+                            class="icon-keyboard_arrow_right"></span></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section subscribe bg-light">
+    <div class="container">
+        <form action="" modelAttribute="api" method="POST" id="add_email_news_letter" class="row align-items-center">
+            {% csrf_token %}
+            <div class="col-md-5 mr-auto">
+                <h2>Newsletter Subcribe</h2>
+                <p>Yes, you can now stay abreast with the latest happening.
+                    We won't go blah, blah, blah on you, trust us!</p>
+            </div>
+            <div class="col-md-6 ml-auto">
+                <div class="d-flex">
+                    <input type="email" class="form-control" placeholder="Enter your email" name="email_newsletter">
+                    <button type="submit" class="btn btn-secondary"><span class="icon-paper-plane"></span></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    function ondelete() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = "{% url 'blog:delete_blog' slug=post.slug %}";
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        let other_reply = $(".abc");
+        for (var i = 0; i < other_reply.length; i++) {
+            other_reply[i].onclick = function () {
+            }
+        }
+
+        $(".abc").click(function (e) {
+            e.preventDefault();
+            var section = $(this).attr("href");
+            $("html, body").animate({
+                scrollTop: $(comment_area).offset().top
+            });
+        })
+
+        $("button").click(function () {
+            var button_name = $(this).attr('name');
+            if (document.getElementById('hidden_val') == document.getElementById(button_name)) {
+                var name_array = button_name.split(',');
+                name_array[0]
+                name_array[1]
+                let name_div = ['name_', name_array[0]].join('');
+                $('#label_alert').text("Replying " + name_array[1] + "'s comment");
+                document.getElementById('reply_id_name').value = name_array[0];
+                var name = document.getElementById('reply_name').value = name_array[1];
+                $(".reply_div").show();
+                $('#id_body').focus();
+            }
+        })
+
+        $(".remove_reply").click(function (e) {
+            e.preventDefault();
+            document.getElementById('reply_id_name').value = "";
+        });
+    });
+</script>
+
+<script>
+    $("#add_email_news_letter").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:add_newsletter_email" %}',
+            data: serializedData,
+            success: function (data) {
+                if (data.email_registered) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Email already registered',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Congratulations, you will be hearing from us shortly',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        });
+    });
+</script>
+
+
+{% endblock javascript %}

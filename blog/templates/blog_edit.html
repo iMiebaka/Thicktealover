@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+
+<<div class="site-section">
+    <div class="container">
+        <div class="col-md-8 offset-md-2">
+
+            <h1>{% block head_title %} Add new Blog {% endblock %}</h1>
+            <hr>
+            <form action="" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.title }}
+                </div>
+
+                <div class="form-group">
+                    {{ form.body }}
+                    {{ form.media }}
+                </div>
+
+                <div class="form-group">
+                    <select hidden class="form-control" multiple="multiple" name="extras" id="id_extras" value="">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div id="filter-component">
+                        {{ form.categories }}
+                    </div>
+                </div>
+
+                {% for category in cat_selected %}
+                <script language="javascript" type="text/javascript">
+                    $(function () {
+                        ab = '{{ category.name }}'
+                        $('#id_extra option:contains(' + ab + ')').attr('selected', 'selected');
+                    });
+                </script>
+                {% endfor %}
+
+
+                <div class="form-group">
+                    <div class="form-check">
+                        {{ form.favorite }}
+                        <label class="form-check-label" for="id_favorite">
+                            Favorite
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Cover Image</label>
+                    {{ form.cover_image }}
+                </div>
+
+                <div class="form-group">
+                    <label>Read up Time</label>
+                    {{ form.read_duration }}
+                </div>
+
+                <div class="form-group">
+                    <label>Tags</label>
+                    <input type="text" data-role="tagsinput" class="form-control" id="_id_tag_item" name="tag_item">
+                </div>
+                <script>
+                    var a = new Array()
+                    {% for tag in tags %}
+                    a.push('{{tag.name}}')
+                    a.push(',')
+                    {% endfor %}
+                    document.getElementById("_id_tag_item").value = a;
+                </script>
+
+                <div class="form-group">
+                    <button type="submit" id="submit" class="btn btn-primary mb-2">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+    {% endblock %}

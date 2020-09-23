@@ -1,0 +1,123 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Collabulation</h1>
+    </div>
+
+    <div class="container">
+        <div id="exTab2" class="container">
+            <div class="section-title">
+                <span class="caption d-block small">Add User</span>
+            </div>
+            <form action="" modelAttribute="api" method="POST" id="form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <div id="filter-component">
+                            <select name="request_key" class="form-control" id="_id_request_key">
+                                {% for key_list in request_list %}
+                                <option value="{{key_list.title}}"> {{key_list.title}} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <div id="filter-component">
+                            <select name="request_author" class="form-control" id="_id_request_author">
+                                {% for author in author_list %}
+                                <option value="{{author.username}}"> {{author.username}} </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <button type="submit" class="btn btn-success" name="approve_request"><span
+                                class="icon-check"></span>Collaburate</button>
+                    </div>
+                </div>
+                <div class="section-title mb-4">
+                    <span class="caption d-block small text-center">
+                        Please note: A collabration can only be initialized
+                        when there is a valid collaburation key
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script language="javascript" type="text/javascript">
+    var ab = '{{ author }}'
+    $('#_id_request_key option:contains(' + ab + ')').attr('selected', 'selected');
+</script>
+
+<script>
+
+    $("#form").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "collaburation_handshake" %}',
+            data: serializedData,
+            success: function (data) {
+                if (data.category_updated) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    // $('#form').submit();
+                    // return true;
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+{% endblock javascript %}

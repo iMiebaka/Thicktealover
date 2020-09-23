@@ -1,0 +1,109 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Post</h1>
+    </div>
+    <form action="" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.title }}
+        </div>
+
+        <div class="form-group">
+            {{ form.body }}
+            {{ form.media }}
+        </div>
+
+        <div class="form-group">
+            <div id="filter-component">
+                {{ form.categories }}
+            </div>
+        </div>
+
+        {% for category in cat_selected %}
+        <script language="javascript" type="text/javascript">
+            $(function () {
+                ab = '{{ category.name }}'
+                // console.log(ab);
+                $('#id_extra option:contains(' + ab + ')').attr('selected', 'selected');
+            });
+        </script>
+        {% endfor %}
+
+        <div class="form-group">
+            <label>Document State</label>
+            {{ form.status }}
+        </div>
+
+        <div class="form-group">
+            <div class="form-check">
+                {{ form.favorite }}
+                <label class="form-check-label" for="id_favorite">
+                    Favorite
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Upload Cover Image</label>
+            {{ form.cover_image }}
+        </div>
+
+        <div class="form-group">
+            <label>Read up Time</label>
+            {{ form.read_duration }}
+        </div>
+
+        <div class="form-group">
+            <label>Tags</label>
+            <input type="text" data-role="tagsinput" class="form-control" id="_id_tag_item" name="tag_item">
+        </div>
+        <script>
+            var a = new Array()
+            {% for tag in tags %}
+            a.push('{{tag.name}}')
+            a.push(',')
+            {% endfor %}
+            document.getElementById("_id_tag_item").value = a;
+        </script>
+
+        <div class="form-group">
+            <button type="submit" id="submit" class="btn btn-primary mb-2">Update</button>
+        </div>
+    </form>
+    </div>
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $("#id_title").focus();
+</script>
+{% endblock javascript %}

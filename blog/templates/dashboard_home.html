@@ -1,0 +1,178 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Blogger's Dashboard</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="container bootstrap snippets bootdey mb-4">
+        <div class="col-md-12">
+            <div class="profile-container">
+                <div class="profile-header row">
+                    <div class="col-md-4 col-sm-12 text-center">
+                        <img src="{{user.profile.cover_image.url}}" alt="" class="header-avatar">
+                    </div>
+                    <div class="col-md-8 col-sm-12 profile-info pl-2">
+                        <div class="header-fullname">{{user.get_full_name}}</div>
+                        <!-- <a href="#" class="btn btn-palegreen btn-sm  btn-follow">
+                            <i class="fa fa-check"></i>
+                            Following
+                        </a> -->
+                        <div class="header-information">
+                            {{user.profile.bio}}
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12 profile-stats">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-12 stats-col">
+                                <div class="stats-value pink">{{user.profile.number_of_post}}</div>
+                                <div class="stats-title">POST CREATED</div>
+                            </div>
+                            <div class="col-md-4 col-sm-4 col-xs-12 stats-col">
+                                <div class="stats-value pink">{{user.profile.number_of_views}}</div>
+                                <div class="stats-title">TOTAL VIEWS</div>
+                            </div>
+                            <div class="col-md-4 col-sm-4 col-xs-12 stats-col">
+                                <div class="stats-value pink">{{collab_count.count}}</div>
+                                <div class="stats-title">TOTAL COLLABURATION</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-sm-4 col-xs-4 inlinestats-col">
+                                Location: <span class="icon-map-marker"></span>  <strong>{{ profile_gist.get_location_display }}</strong>
+                            </div>
+                            <div class="col-md-6 col-sm-4 col-xs-4 inlinestats-col">
+                                Date Registered: <span class="mx-1 icon-calendar"></span> <strong>{{user.date_joined}}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Earnings (Monthly)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Pending</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Earnings (Annual)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Pending</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Tasks</div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">Pending
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 0%"
+                                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending Requests</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">None</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-comments fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+
+</script>
+{% endblock javascript %}

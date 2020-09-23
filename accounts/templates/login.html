@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+
+{% block page_content %}
+{% if user.is_authenticated %}
+<!-- <link rel="stylesheet" href="{% static 'css/style_admin.css' %}"> -->
+{% else %}
+<!-- <link rel="stylesheet" href="{% static 'css/style_five.css' %}"> -->
+{% endif %}
+
+<div class="site-section bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title mb-5">
+                    <h2>{% block head_title %} Login {% endblock %}</h2>
+                </div>
+                <form method="post" class="register-form" id="login-form" role="form"
+                    action="{% url 'accounts:login' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="fname">Name</label>
+                            <input type="text" id="fname" name="your_name" class="form-control form-control-lg"
+                                placeholder="Username" autofocus=True>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="pass">Password</label>
+                            <div class="input-group">
+                                <input type="password" id="pass" name="your_pass"
+                                    class="form-control form-control-lg pwd" placeholder="Password">
+                                <span class="input-group-btn"> <button type="button" class="form-control form-control-lg btn btn-default reveal"> <span class="mx-1 icon-eye" id="password_symbol"></span> </button></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <a href="{% url 'accounts:password_reset' %}" class="password_reset">Having Issues Logging
+                            in</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-3 form-group">
+                            <button type="submit" value="Login" class="btn btn-primary py-3 px-5">Login</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="form-group">
+                    <a href="{% url 'accounts:signup' %}" class="signup-image-link">Create an account</a>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    // $("#fname").focus();
+    $(".reveal").on('click', function () {
+        var $pwd = $(".pwd");
+        var $symbol = $("#password_symbol")
+        if ($pwd.attr('type') === 'password') {
+            $pwd.attr('type', 'text');
+            $symbol.attr('class', 'mx-1 icon-visibility_off')
+        }
+        else {
+            $pwd.attr('type', 'password');
+            $symbol.attr('class', 'mx-1 icon-eye')
+        }
+    });
+    $("#fname").change(function () {
+        var username = $(this).val();
+
+        $.ajax({
+            url: '{% url "accounts:validate_username" %}',
+            data: {
+                'username': username
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.is_taken);
+                if (!data.is_taken) {
+                    // alert("A user with this username already exists.");
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'No match for username "' + username + '"',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        });
+    });
+        // console.log("Hello");
+</script>
+{% endblock javascript %}

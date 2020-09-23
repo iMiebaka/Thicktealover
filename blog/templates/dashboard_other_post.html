@@ -1,0 +1,130 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Blog Post Status</h1>
+    </div>
+    <table class="table table-striped table-bordered table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Date Published</th>
+                <th>Approved By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for list in posts %}
+            <tr>
+                <td> <a class="nav-link" href="{% url 'blog:pending_blog_detail' slug=list.slug %}">{{ list.title }}</a></td>
+                <td> {{ list.author.username}}</td>
+                {% if list.published_flag is True %}
+                <td> Published </td>
+                {% else %}
+                <td> Pending </td>
+                {% endif %}
+                <td> {{ list.created_on }} </td>
+                {% if list.published_flag is True %}
+                <td> {{ list.approved_by.get_full_name }} </td>
+                <td>
+                    <a class="nav-link">
+                        <i class="fas fa-fw fa-check"></i>
+                        <span></span> Approved</a>
+                </td>
+                {% else %}
+                <td>
+                    <center>--</center>
+                </td>
+                <td>
+                    <form action="" modelAttribute="api" method="POST" id="post_request">
+                        {% csrf_token %}
+                        <input type="hidden" id="list_author" name="list_author" value="{{ list.author }}">
+                        <input type="hidden" id="list_id" name="list_id" value="{{ list.id }}">
+                        <button type="submit" class="nav-link">
+                            <i class="fas fa-fw fa-exclamation-circle"></i>
+                            <span></span> Approve</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if posts %}
+    <p></p>
+    {% else %}
+    <div class="text-center d-block">
+        <p class="lead text-gray-800 mb-5">
+            <h2>Nothing to display</h2>
+        </p>
+        <p class="text-gray-500 mb-0">Try checking back soon</p>
+    </div>
+    {% endif %}
+
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $("#post_request").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:add_post_request" %}',
+            data: serializedData,
+            success: function (data) {
+                if (data.ajax_request) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    // $('#form').submit();
+                    // return true;
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        })
+    });
+</script>
+{% endblock javascript %}

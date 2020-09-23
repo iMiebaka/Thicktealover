@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<div class="col-md-8 offset-md-2">
+    <h1>{% block head_title %} Add new Blog {% endblock %}</h1>
+    <hr>
+    <form action="/blog/new/" modelAttribute="api" method="POST" id="form" onsubmit="validateForm();">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.title }}
+
+        </div>
+
+        <div class="form-group">
+            {{ form.body }}
+            {{ form.media }}
+        </div>
+
+        <div class="form-group">
+            <select hidden class="form-control" multiple="multiple" name="extras" id="id_extras" value="">
+            </select>
+        </div>
+
+        <div class="form-group">
+            <div id="filter-component">
+                <select class="form-control selectpicker" multiple data-live-search="true" name="extra" required
+                    id="id_extra">
+
+                    {% for entry in articles_list %}
+                    <option value="{{ entry.name }}">{{ entry.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-4">S T A T U S</div>
+            <div class="col-sm-4">
+                <div class="form-check ">
+                    <input class="form-check-input" name="published_flag" type="checkbox"
+                        id="gridCheck1 id_published_flag" checked>
+                    <label class="form-check-label" for="gridCheck1">
+                        Published/ Unpublished
+                    </label>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <!-- <button type="button" class="btn btn-primary" onclick="validateForm2()">S H O W -->
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+
+    </form>
+
+    <script>
+        //     var searchData;
+        // $(document).on('keyup', '#filter-component .bs-searchbox input', function (e) {
+        //     searchData = e.target.value;
+        // });
+        function validateForm2() {
+            var select;
+            select = document.getElementById("id_extras");
+            select.options.length = 0;
+            var selected_array = new Array();
+            // selected_array[0] = "*_art";
+            selected_array = $('#id_extra option:selected')
+                .toArray().map(item => item.text);
+            // selected_array.push("*art_");
+            for (index in selected_array) {
+                select.options[select.options.length] = new Option(selected_array[index], selected_array[index]);
+            }
+            for (index in selected_array) {
+                $('#id_extras option:contains(' + selected_array[index] + ')').attr('selected', 'selected');
+            }
+        }
+
+        function validateForm() {
+            var select;
+            select = document.getElementById("id_extras");
+            select.options.length = 0;
+            var selected_array = new Array();
+            // selected_array[0] = "*_art";
+            selected_array = $('#id_extra option:selected')
+                .toArray().map(item => item.text);
+            // selected_array.push("*art_");
+            for (index in selected_array) {
+                select.options[select.options.length] = new Option(selected_array[index], selected_array[index]);
+            }
+            for (index in selected_array) {
+                $('#id_extras option:contains(' + selected_array[index] + ')').attr('selected', 'selected');
+            }
+            $('#form').submit();
+            return true;
+        }
+
+    </script>
+
+    {% endblock %}
+</div>
+
+<!-- <p>Common Tags: 
+        {% for mt in common_tags %}
+            <a href="#" class="badge badge-success">{{mt}}</a>
+        {% endfor %}
+        </p> -->
+
+<!-- <form action="/blog/new/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+    <div class="wrapper">
+     <div class="form-group thead-dark">
+         <input type="text" class="form-control" name="title" id="id_title" required maxlength="255" placeholder="Blog title" />
+        </div>
+        
+        <div class="form-group">
+            <textarea name="body" class="form-control" id="id_body" cols="30" rows="10" required maxlength="2000"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <select class="form-control" name="extras" id="id_extras">
+                {% for entry in articles_list %}
+                <option value="{{ entry.name }}">{{ entry.name }}</option>
+                {% endfor %}
+            </select> 
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+    </form> -->
+
+<!-- <div class="form-group">
+        <select class="form-control" name="categories" id="id_categories" required id="id_categories">
+            <option selected="selected" disabled>Please Select Articles:</option>
+            {% for art in form %}
+            {% for entry in art.posts.all %}
+            <option value="{{ entry }}">{{ entry }}</option>
+            {% endfor %}
+            {% endfor %}
+        </select>
+    </div> -->

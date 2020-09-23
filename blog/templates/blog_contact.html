@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+{% block head_title %} Contact Us {% endblock head_title %}
+{% block page_content %}
+<div class="site-section bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="section-title mb-5">
+                    <h2>Contact Us</h2>
+                </div>
+                <form modelAttribute="api" method="POST" class="register-form" id="register-form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_first_name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="id_last_name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="id_email"><i class="zmdi"></i></label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="id_phone_number"><i class="zmdi"></i></label>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <label for="id_message"><i class="zmdi zmdi-email"></i></label>
+                            {{ form.message }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <input type="submit" name="send" id="send" class="btn btn-primary py-3 px-5" value="Send Message" />
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+
+<script>
+    document.getElementById('id_first_name').focus();
+    $("#add_email_news_letter").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:add_newsletter_email" %}',
+            data: serializedData,
+            success: function (data) {
+                if (data.email_registered) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Email already registered',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Congratulations, you will be hearing from us shortly',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock javascript %}

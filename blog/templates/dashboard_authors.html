@@ -1,0 +1,83 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Authors</h1>
+    </div>
+    <table class="table table-striped table-bordered table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th>Username</th>
+                <th>Fullname</th>
+                <th>Blogs Created</th>
+                <th>Views</th>
+                <th>Postion</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for list in authors %}
+            <tr>
+                <td> <a class="nav-link" href="../../author/{{ list.username }}">{{ list.username }}</a></td>
+                <td> {{ list.get_full_name}}</td>
+                <td> {{ list.profile.number_of_post }}</td>
+                <td> {{ list.profile.number_of_views }} </td>
+                {% if list.is_superuser is True %}
+                <td>
+                    Admin
+                </td>
+                {% else %}
+                <td>
+                    Staff
+                </td>
+                {% endif %}
+                {% if login_user == list.username %}
+                <td>
+                    <a class="nav-link">
+                        <i class="fas fa-fw fa-users"></i>
+                        <span>Collaburate</span></a>
+                    </td>
+                    {% else %}
+                    <td>
+                        <a class="nav-link" href="{% url 'blog:dashboard_collaburation' list.username %}">
+                            <i class="fas fa-fw fa-users"></i>
+                            <span>Collaburate</span></a>
+                        </td>
+                    {% endif %}
+                <!-- <td>{{ list.author.all.count }}</td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- /.container-fluid -->
+{% endblock %}
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+{% endblock javascript %}

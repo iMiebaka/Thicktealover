@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<link rel="stylesheet" href="{% static 'css/style_five.css' %}">
+<div class="col-md-8 offset-md-2">
+    <h1>{% block head_title %} Sign Up {% endblock %}</h1>
+    <hr>
+    <form action="" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
+        {% csrf_token %}
+       {{ form.as_p }}
+        <div class="form-group">
+            <button type="submit" id="submit" class="btn btn-primary">Sign Up</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

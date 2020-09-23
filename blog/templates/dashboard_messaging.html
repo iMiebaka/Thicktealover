@@ -1,0 +1,212 @@
+{% extends "dashboard.html" %}
+{% load static %}
+{% block head_title %} {{ user.last_name }}'s Dashboard {% endblock %}
+
+{% block dashboard %}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Messaging</h1>
+    </div>
+
+    <div class="container">
+        <div id="exTab2" class="container">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a class="btn btn-light" href="#1" data-toggle="tab">Write</a>
+                </li>
+                <li>
+                    <a class="btn btn-light" href="#2" data-toggle="tab"> Read</a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active animated--grow-in" id="1">
+                    <div class="section-title">
+                        <span class="caption d-block small">Requests Category</span>
+                    </div>
+                    <div class="section-title mb-2">
+                        <h2>Send Message</h2>
+                    </div>
+                    <form action="" modelAttribute="api" method="POST" class="register-form" id="user_send_message">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="id_title"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                                {{ form_message.title }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="id_message"><i class="zmdi zmdi-email"></i></label>
+                                {{ form_message.options }}
+                            </div>
+                        </div>
+
+                        <div class="row" id="row_reciever" hidden>
+                            <div class="form-group">
+                                <label for="id_message"><i class="zmdi zmdi-email"></i></label>
+                                {{ form_message.message_to }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="id_message"><i class="zmdi zmdi-email"></i></label>
+                                {{ form_message.message }}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" id="send_message_loading_btn" class="btn btn-secondary"
+                                name="send_message">
+                                <div id="send_message_default">
+                                    <span class="icon-paper-plane"></span> Send
+                                </div>
+                                <div id="send_message_loading" hidden>
+                                    <span class="spinner-border spinner-border-sl" role="status"></span>
+                                </div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <div class="tab-pane animated--grow-in" id="2">
+                    {% if encap is True %}
+                    <div class="section-title">
+                        <span class="caption d-block small">messages</span>
+                    </div>
+
+                    <div class="dropdown-menu-right shadow " aria-labelledby="alertsDropdown">
+                        <h6 class="dropdown-header">
+                            Alerts Center
+                        </h6>
+
+                        {% for list in form %}
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="bio-pic mr-3">
+                                <img src="{{ list.username.profile.cover_image.url  }}" alt="Profile Image"
+                                    class="img-fluidid">
+                            </div>
+                            <div>
+                                <!-- <div class="text-gray-800">{{ list.username }} </div> -->
+                                <div class="text-gray-800">{{ list.username }} </div>
+                                <div class="small text-gray-500">{{list.created_on}}</div>
+                                <span class="font-weight-bold">{{ list.message | truncatechars_html:42 | safe }} </span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                        <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                    </div>
+                    {% else %}
+
+                    {% if request_key %}
+                    <p></p>
+                    {% else %}
+                    <div class="text-center d-block">
+                        <p class="lead text-gray-800 mb-5">
+                            <h2>Nothing to display</h2>
+                        </p>
+                        <p class="text-gray-500 mb-0">Do check back occassionally </p>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascript %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
+
+<script>
+    $("#id_option_select").change(function () {
+        var check_options = $(this).val();
+        if (check_options == "Admin") {
+            $("#row_reciever").attr("hidden", true);
+        }
+        if (check_options == "Others") {
+            $("#row_reciever").removeAttr("hidden");
+
+        }
+    });
+
+
+    $("#user_send_message").submit(function (e) {
+        e.preventDefault();
+        $("#send_message_loading_btn").attr("disabled", true);
+        $("#send_message_default").attr("hidden", true);
+        $("#send_message_loading").removeAttr("hidden");
+
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "blog:user_send_message" %}',
+            data: serializedData,
+            success: function (data) {
+                $("#send_message_loading_btn").removeAttr("disabled");
+                $("#send_message_default").removeAttr("hidden");
+                $("#send_message_loading").attr("hidden", true);
+                if (data.ajax_feedback) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    // $('#form').submit();
+                    // return true;
+                }
+                else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+
+            }
+        })
+    });
+
+</script>
+
+<script>
+    function call_counter(url, pk) {
+        window.open(url);
+        $.get('YOUR_VIEW_HERE/' + pk + '/', function (data) {
+            alert("counter updated!");
+        });
+    } 
+</script>
+
+{% endblock javascript %}
