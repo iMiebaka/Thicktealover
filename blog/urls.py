@@ -26,6 +26,7 @@ urlpatterns = [
     path("author/<author>/", views.blog_author, name="blog_author"),
     path("dashboard/<author>/", views.dashboard_home, name="dashboard_home"),
     path("dashboard/<author>/messaging", views.dashboard_messaging, name="dashboard_messaging"),
+    path("dashboard/<author>/message/<uidb64>/", views.dashboard_opened_message, name="dashboard_opened_message"),
     path("dashboard/<author>/request", views.dashboard_request, name="dashboard_request"),
     path("dashboard/<author>/collaburation", views.dashboard_collaburation, name="dashboard_collaburation"),
     path("dashboard/<author>/new", views.dashboard_add_post, name="dashboard_add_post"),

@@ -24,6 +24,27 @@
                                     <div class="header-information">
                                         Bio: <strong>{{author.profile.bio}}</strong>
                                     </div>
+                                    {% if author.profile.visibility %}
+                                    {% if author.profile.linkedin %}
+                                    <a href="{{ author.profile.linkedin }}"><span
+                                            class="mx-1 icon-linkedin-square"></span></a>
+                                    {% endif %}
+                                    {% if author.profile.twitter %}
+                                    <a href="{{ author.profile.twitter }}"><span
+                                            class="mx-1 icon-twitter"></span></a>
+                                    {% endif %}
+                                    {% if author.profile.github %}
+                                    <a href="{{ author.profile.github }}"><span
+                                            class="mx-1 icon-github-square"></span></a>
+                                    {% endif %}
+                                    {% if author.profile.whatsapp %}
+                                    <a href="{{ author.profile.whatsapp }}"><span
+                                            class="mx-1 icon-whatsapp"></span></a>
+                                    {% endif %}
+                                    {% endif %}
+                                    <span class="icon-map-marker"></span>
+                                    <strong>{{ author.profile.get_location_display }}</strong>
+
                                 </div>
                             </div>
                         </div>

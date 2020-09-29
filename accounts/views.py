@@ -37,21 +37,21 @@ def login(request):
     if request.user.is_authenticated:
         messages.error(request,'Please logout first')
         return redirect('blog:dashboard_home', author=request.user)
-        # return redirect('accounts:logout_to_login_view')
     else:
-        try:
-            if request.method == 'POST':
-                username = request.POST['your_name']
-                raw_password = request.POST['your_pass']
-                user = authenticate(username=username, password=raw_password)
-                if user is not None:
-                    auth_login(request, user)
-                    messages.success(request, "Logged in")
-                    return redirect('blog:dashboard_home', author=user)
-                else:
-                    messages.error(request, 'Ops')
-        except:
+        if request.method == 'POST':
+            username = request.POST['your_name']
+            raw_password = request.POST['your_pass']
+            user = authenticate(username=username, password=raw_password)
+            if user is not None:
+                auth_login(request, user)
+                messages.success(request, "Logged in")
+                return redirect('blog:dashboard_home', author=user)
+            else:
+                messages.error(request, 'Ops')
+        else:
             pass
+    # print(urlsafe_base64_encode(force_bytes(request.user.pk)))
+    # print(default_token_generator.make_token(request.user))
     return render(request, 'login.html', {"bt_highlighte_signing": True})
 
 

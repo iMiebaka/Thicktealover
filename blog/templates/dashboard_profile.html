@@ -12,43 +12,53 @@
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Profile</h1>
                 </div>
+                <div class="col-md-9 alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong> Attention! </strong> Please make sure all mark as required field are updated else all
+                    post will not be published
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="col-md-9 alert alert-success alert-dismissible fade show" role="alert">
+                    Mark as required field are indicated by<strong> *</strong> 
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <form modelAttribute="api" method="POST" class="register-form" id="register-form"
                     enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="id_username"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            <label for="id_username"><i class="zmdi"></i>*</label>
                             {{ form.username }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="first_name"><i class="zmdi zmdi-account material-icons-name"></i></label>
+                            <label for="first_name"><i class="zmdi"></i>*</label>
                             {{ form.first_name }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="id_last_name"><i class="zmdi"></i></label>
+                            <label for="id_last_name"><i class="zmdi"></i>*</label>
                             {{ form.last_name }}
                         </div>
                     </div>
 
-
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="id_email"><i class="zmdi zmdi-email"></i></label>
+                            <label for="id_email"><i class="zmdi zmdi-email">*</i></label>
                             {{ form.email }}
                         </div>
                     </div>
 
-                    
-                    
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="id_location"><i class="zmdi"></i>Select your countries</label>
+                            <label for="id_location"><i class="zmdi"></i>* Select your countries</label>
                             {{ form_two.location }}
                         </div>
                     </div>
@@ -61,7 +71,13 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 form-group">
+                        <div class="col-md-3 form-group">
+                            <div class="form-check">
+                                {{ form_two.remove_photo }}
+                                <label class="form-check-label" for="id_remove_photo">
+                                    Remove Image
+                                </label>
+                            </div>
                             <label for="id_cover_image"><i class="zmdi"></i></label>
                             {{ form_two.cover_image }}
                         </div>
@@ -69,88 +85,90 @@
 
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="id_bio"><i class="zmdi"></i></label>
+                            <label for="id_bio"><i class="zmdi"></i>*</label>
                             {{ form_two.bio }}
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="id_sex"></label>
                             {{ form_two.sex }}
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="id_linkedin"><i class="zmdi"></i></label>
-                            {{ form_three.linkedin }}
+                            {{ form_two.linkedin }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="id_twitter"><i class="zmdi"></i></label>
-                            {{ form_three.twitter }}
+                            {{ form_two.twitter }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="id_github"><i class="zmdi"></i></label>
-                            {{ form_three.github }}
+                            {{ form_two.github }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="id_whatsapp"><i class="zmdi"></i></label>
-                            {{ form_three.whatsapp }}
+                            {{ form_two.whatsapp }}
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="form-check">
-                            {{ form_three.visibility }}
+                            {{ form_two.visibility }}
                             <label class="form-check-label" for="id_visibility">
-                               Show Scocial Platform
+                                Show Social Platforms
                             </label>
                         </div>
                     </div>
-            
+
 
                     <div class="col-3 form-group">
                         <input type="submit" name="signup" id="signup" class="btn btn-primary py-3 px-5"
-                        value="Update" />
+                            value="Update" />
                     </div>
-                    
+
                 </form>
             </div>
         </div>
-        <!-- /.container-fluid -->
-        {% endblock %}
+    </div>
+</div>
+<!-- /.container-fluid -->
+{% endblock %}
 
-        {% block javascript %}
+{% block javascript %}
 
-        {% if messages %}
-        {% for message in messages %}
-        <script>
-            var tag_alert = '{{ message.tags }}';
-            if (tag_alert == 'alert-success') {
-                tag_alert = 'success';
-            }
-            if (tag_alert == 'alert-danger') {
-                tag_alert = 'error';
-            }
-            Swal.fire({
-                position: 'top-end',
-                icon: tag_alert,
-                title: '{{ message }}',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        </script>
-        {% endfor %}
-        {% endif %}
+{% if messages %}
+{% for message in messages %}
+<script>
+    var tag_alert = '{{ message.tags }}';
+    if (tag_alert == 'alert-success') {
+        tag_alert = 'success';
+    }
+    if (tag_alert == 'alert-danger') {
+        tag_alert = 'error';
+    }
+    Swal.fire({
+        position: 'top-end',
+        icon: tag_alert,
+        title: '{{ message }}',
+        showConfirmButton: false,
+        timer: 1500
+    })
+</script>
+{% endfor %}
+{% endif %}
 
-        {% endblock javascript %}
+{% endblock javascript %}

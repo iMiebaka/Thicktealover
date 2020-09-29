@@ -46,11 +46,32 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 col-sm-4 col-xs-4 inlinestats-col">
-                                Location: <span class="icon-map-marker"></span>  <strong>{{ profile_gist.get_location_display }}</strong>
+                            <div class="col-md-4 col-sm-4 col-xs-4 inlinestats-col">
+                                Location: <span class="icon-map-marker"></span>
+                                <strong>{{ user.profile.get_location_display }}</strong>
                             </div>
-                            <div class="col-md-6 col-sm-4 col-xs-4 inlinestats-col">
-                                Date Registered: <span class="mx-1 icon-calendar"></span> <strong>{{user.date_joined}}</strong>
+                            <div class="col-md-4 col-sm-4 col-xs-4 inlinestats-col">
+                                {% if user.profile.visibility %}
+                                Socials:
+                                {% if user.profile.linkedin %}
+                                <a href="{{ user.profile.linkedin }}"><span
+                                        class="mx-1 icon-linkedin-square"></span></a>
+                                {% endif %}
+                                {% if user.profile.twitter %}
+                                <a href="{{ user.profile.twitter }}"><span class="mx-1 icon-twitter"></span></a>
+                                {% endif %}
+                                {% if user.profile.github %}
+                                <a href="{{ user.profile.github }}"><span class="mx-1 icon-github-square"></span></a>
+                                {% endif %}
+                                {% if user.profile.whatsapp %}
+                                <a href="{{ user.profile.whatsapp }}"><span class="mx-1 icon-whatsapp"></span></a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 col-sm-4 col-xs-4 inlinestats-col">
+                                Date Registered: <span class="mx-1 icon-calendar"></span>
+                                <strong>{{user.date_joined}}</strong>
                             </div>
                         </div>
                     </div>

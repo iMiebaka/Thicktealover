@@ -9,6 +9,22 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Post</h1>
     </div>
+    {% if user.profile.profile_complete %}
+    <div class="col-md-9 alert alert-success alert-dismissible fade show" role="alert">
+        <strong> Congratulation! </strong> The completion of your neccessary profile details, make the blog post
+        publishable
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% else %}
+    <div class="col-md-9 alert alert-warning alert-dismissible fade show" role="alert">
+        <strong> Attention! </strong> Blog Post will not be published due to incomplete profile
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
     <form action="" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
@@ -50,9 +66,17 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Upload Cover Image</label>
-            {{ form.cover_image }}
+        <div class="row">
+            <div class="col-md-3 form-group">
+                <div class="form-check">
+                    {{ form.remove_photo }}
+                    <label class="form-check-label" for="id_remove_photo">
+                        Remove Image
+                    </label>
+                </div>
+                <label for="id_cover_image"><i class="zmdi"></i></label>
+                {{ form.cover_image }}
+            </div>
         </div>
 
         <div class="form-group">
@@ -77,7 +101,7 @@
             <button type="submit" id="submit" class="btn btn-primary mb-2">Update</button>
         </div>
     </form>
-    </div>
+</div>
 <!-- /.container-fluid -->
 {% endblock %}
 
