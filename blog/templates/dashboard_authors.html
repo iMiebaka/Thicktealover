@@ -9,51 +9,53 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Authors</h1>
     </div>
-    <table class="table table-striped table-bordered table-sm">
-        <thead class="thead-dark">
-            <tr>
-                <th>Username</th>
-                <th>Fullname</th>
-                <th>Blogs Created</th>
-                <th>Views</th>
-                <th>Postion</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for list in authors %}
-            <tr>
-                <td> <a class="nav-link" href="../../author/{{ list.username }}">{{ list.username }}</a></td>
-                <td> {{ list.get_full_name}}</td>
-                <td> {{ list.profile.number_of_post }}</td>
-                <td> {{ list.profile.number_of_views }} </td>
-                {% if list.is_superuser is True %}
-                <td>
-                    Admin
-                </td>
-                {% else %}
-                <td>
-                    Staff
-                </td>
-                {% endif %}
-                {% if login_user == list.username %}
-                <td>
-                    <a class="nav-link">
-                        <i class="fas fa-fw fa-users"></i>
-                        <span>Collaburate</span></a>
+    <div class="overflow-auto">
+        <table class="table table-striped table-bordered table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Username</th>
+                    <th>Fullname</th>
+                    <th>Blogs Created</th>
+                    <th>Views</th>
+                    <th>Postion</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in authors %}
+                <tr>
+                    <td> <a class="nav-link" href="../../author/{{ list.username }}">{{ list.username }}</a></td>
+                    <td> {{ list.get_full_name}}</td>
+                    <td> {{ list.profile.number_of_post }}</td>
+                    <td> {{ list.profile.number_of_views }} </td>
+                    {% if list.is_superuser is True %}
+                    <td>
+                        Admin
+                    </td>
+                    {% else %}
+                    <td>
+                        Staff
+                    </td>
+                    {% endif %}
+                    {% if login_user == list.username %}
+                    <td>
+                        <a class="nav-link">
+                            <i class="fas fa-fw fa-users"></i>
+                            <span>Collaburate</span></a>
                     </td>
                     {% else %}
                     <td>
                         <a class="nav-link" href="{% url 'blog:dashboard_collaburation' list.username %}">
                             <i class="fas fa-fw fa-users"></i>
                             <span>Collaburate</span></a>
-                        </td>
+                    </td>
                     {% endif %}
-                <!-- <td>{{ list.author.all.count }}</td> -->
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    <!-- <td>{{ list.author.all.count }}</td> -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- /.container-fluid -->

@@ -139,23 +139,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),) 
-
-# MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
-# MEDIA_URL= "/media/"
-
+if DEBUG is False:
 #S3
-AWS_ACCESS_KEY_ID = 'AKIAVZHLZMCYIIAJKR44'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'mebbscorner001'
+    AWS_ACCESS_KEY_ID = 'AKIAVZHLZMCYIIAJKR44'
+    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_STORAGE_BUCKET_NAME = 'mebbscorner001'
+    AWS_S3_CONTAINS_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    MEDIAFILES_LOCATION = 'media'
+    STATICFILES_LOCATION = 'static'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATIC_URL = '/static/'
 
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
+    MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
+    MEDIA_URL= "/media/"
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),) 
 
 
 CKEDITOR_UPLOAD_PATH = 'uploads/'

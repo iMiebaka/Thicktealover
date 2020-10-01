@@ -1031,7 +1031,6 @@ def dashboard_profile(request, author):
                     if update_user.username != None and update_user.first_name != None and update_user.last_name != None and update_user_two.location != None and update_user_two.bio !=None:
                         update_user_two.profile_complete = True
                         update_user_two.save()
-                        print('Complete')
                     else:
                         update_user_two.profile_complete = False
                         update_user_two.save()
@@ -1044,7 +1043,6 @@ def dashboard_profile(request, author):
                     form = SignupForm(instance=request.user)
                     form_two = ProfileForm(instance=request.user.profile)
             except ValidationError as e:
-                # print(ValidationError)
                 messages.error(request, ValidationError.str(e))
             except ValueError as e:
                 update_user_two.cover_image = ''
