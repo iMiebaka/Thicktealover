@@ -59,9 +59,7 @@
                         </span>
                     </div>
                 </div>
-                {% if settings.DEBUG is False %}
-                Hello
-                {% endif %}
+
                 <p>{{ post.body | safe }}</p>
 
                 <div class="pt-5">
@@ -80,7 +78,7 @@
                 </div>
 
                 <div class="">
-                    <div class="ml-md-auto top-social d-none d-lg-inline-block">
+                    <div class="col-md-12">
                         Let Someone know
                         <div class="row">
                             <div class="col-md-3">
