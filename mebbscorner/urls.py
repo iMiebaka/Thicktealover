@@ -5,17 +5,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
+from django.contrib.sitemaps.views import sitemap
+from blog.sitemaps import StaticSitemap
+from django.contrib.sitemaps.views import sitemap
 
-# from my_app.views import (
-#     indexView,
-#     postFriend,
-#     checkNickName,
-# )
-
+sitemaps = {
+    # 'article': PostSitemap,
+    'static': StaticSitemap
+    }
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include('blog.urls',namespace="blog")),
+    # path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon.ico'))),
     path("accounts/", include('accounts.urls', namespace="accounts")),

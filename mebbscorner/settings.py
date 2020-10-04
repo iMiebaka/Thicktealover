@@ -1,7 +1,7 @@
 
 import os
 from django.contrib.messages import constants as messages
-# from pathlib import Path
+from .config import AMAZON_CREDENTIAL
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 
     #apps
    'blog',
@@ -140,24 +141,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 if DEBUG is False:
-#S3
-    AWS_ACCESS_KEY_ID = 'AKIAVZHLZMCYIIAJKR44'
-    AWS_SECRET_ACCESS_KEY = '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'
-    AWS_STORAGE_BUCKET_NAME = 'mebbscorner001'
-    AWS_S3_CONTAINS_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_ACCESS_KEY_ID = AMAZON_CREDENTIAL['AWS_ACCESS_KEY_ID'] #'AKIAVZHLZMCYIIAJKR44'
+    AWS_SECRET_ACCESS_KEY = AMAZON_CREDENTIAL['AWS_SECRET_ACCESS_KEY'] #'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'
+    AWS_STORAGE_BUCKET_NAME = AMAZON_CREDENTIAL['AWS_STORAGE_BUCKET_NAME'] #'mebbscorner001'
     AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
     AWS_DEFAULT_ACL = None
     MEDIAFILES_LOCATION = 'media'
-    STATICFILES_LOCATION = 'static'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    STATIC_URL = '/static/'
+    DEFAULT_FILE_STORAGE = 'mebbscorner.custom_storages.MediaStorage'
 
+else:
     MEDIA_ROOT= os.path.join(BASE_DIR, 'media/')
     MEDIA_URL= "/media/"
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),) 
 
 

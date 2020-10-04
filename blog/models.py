@@ -39,7 +39,7 @@ class Post(models.Model):
     slug = models.SlugField(unique=True, max_length=100, null=True)
     body = RichTextUploadingField()
     created_on = models.DateTimeField(auto_now_add=True)
-    cover_image = models.ImageField(default='big_img_1.jpg', upload_to='images/') 
+    cover_image = models.ImageField(default='teadefault.jpg', upload_to='images/') 
     last_modified = models.DateTimeField(auto_now=True, blank=True)
     published_flag = models.BooleanField(null=True, default=False)
     status = models.CharField(max_length=7, null=True)
@@ -55,7 +55,9 @@ class Post(models.Model):
         return self.title 
 
     # def get_absolute_url(self):
-    #     return reverse('blog_detail', kwargs={'slug': self.slug})
+    #     return reverse('blog:blog_detail', args = [str(self.slug)])
+        # return (kwargs={'slug': self.slug})
+        # return f'/{self.slug}'
     
 class Post_views(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='postview')

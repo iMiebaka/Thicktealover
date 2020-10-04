@@ -2,8 +2,6 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 # from django.contrib.auth import views
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
 
 app_name = 'blog'
 urlpatterns = [
@@ -54,6 +52,3 @@ urlpatterns = [
     # path("<int:pk>/delete/", views.delete_blog, name='delete_blog'),
     # path("add_comment/<int:pk>/", views.add_comment, name="add_comment"),
 ] 
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
