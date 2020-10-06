@@ -831,7 +831,7 @@ def dashboard_add_post(request, author):
     else:
         form = PostForms2()
     context = {
-        "bt_highlighted_add_blog": True,
+        "bt_highlighted_add_post": True,
         "form": form,
         "author": author
     }
@@ -1237,7 +1237,7 @@ def blog_detail(request, slug):
                             new_comment.save()
                     messages.success(request, "The comment has been posted successfully")
                     # return HttpResponseRedirect(post.get_absolute_url())
-                    return redirect('blog:blog_detail_legal', slug=post.slug)
+                    return redirect('blog:blog_detail', slug=post.slug)
 
             else:
                 comment_form = CommentForm(data=request.POST)

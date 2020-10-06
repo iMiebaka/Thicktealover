@@ -70,7 +70,6 @@ def signup(request):
                 )
                 user.first_name = request.POST['first_name']
                 user.last_name = request.POST['last_name']
-                user.phone_number = request.POST['phone_number']
                 user.is_active = False
                 no_user = User.objects.all().count()
                 if no_user == 0:
