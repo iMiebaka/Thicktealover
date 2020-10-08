@@ -15,7 +15,7 @@
                             <div class="contents">
                                 <span class="caption">Editor's Pick</span>
                                 <h2><a href="{% url 'blog:blog_detail' slug=fp.slug %}">{{ fp.title }}</a></h2>
-                                <p class="mb-3">{{ fp.body | truncatechars_html:339  | safe }}</p>
+                                <p class="mb-3">{{ fp.strip_tags | truncatechars_html:339  | safe }}</p>
                                 <div class="post-meta">
                                     <span class="d-block">
                                         <a href="{% url 'blog:blog_author' fp.author %}">
@@ -59,7 +59,7 @@
                         <div class="post-entry-1">
                             <img src="{{ fav_post.cover_image.url }}" alt="Image" class="img-fluid">
                             <h2><a href="{% url 'blog:blog_detail' slug=fav_post.slug %}">{{ fav_post.title }}</a></h2>
-                            <p>{{ fav_post.body | truncatechars_html:120  | safe }}</p>
+                            <p>{{ fav_post.strip_tags | truncatechars_html:120  | safe }}</p>
 
                             <div class="post-meta">
                                 <span class="d-block">
@@ -196,7 +196,7 @@
                 <h2><a
                         href="{% url 'blog:blog_detail' slug=featured_blog_single.slug %}">{{ featured_blog_single.title }}</a>
                 </h2>
-                <p class="mb-3">{{ featured_blog_single.body | truncatechars_html:120  | safe }}</p>
+                <p class="mb-3">{{ featured_blog_single.strip_tags | truncatechars_html:120  | safe }}</p>
                 <div class="post-meta">
                     <span class="d-block">
                         <a href="{% url 'blog:blog_author' featured_blog_single.author %}">
@@ -236,7 +236,7 @@
                     <div class="thumbnail" style="background-image: url('{{ post.cover_image.url }}')"></div>
                     <div class="contents">
                         <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
-                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <p class="mb-3">{{ post.strip_tags | truncatechars_html:120  | safe }}</p>
                         <div class="post-meta">
                             <span class="d-block">
                                 <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.last_name }}
@@ -270,7 +270,7 @@
                     <div class="thumbnail" style="background-image: url('{{ post.cover_image.url }}')"></div>
                     <div class="contents">
                         <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
-                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <p class="mb-3">{{ post.strip_tags | truncatechars_html:120  | safe }}</p>
 
                         <div class="post-meta">
                             <span class="d-block">
@@ -315,7 +315,7 @@
                     </div>
                     <div class="contents order-md-1 pl-2">
                         <h2><a href="{% url 'blog:blog_detail' slug=post.slug %}">{{ post.title }}</a></h2>
-                        <p class="mb-3">{{ post.body | truncatechars_html:120  | safe }}</p>
+                        <p class="mb-3">{{ post.strip_tags | truncatechars_html:120  | safe }}</p>
                         <div class="post-meta">
                             <span class="d-block">
                                 <a href="{% url 'blog:blog_author' post.author %}">{{ post.author.last_name }}
