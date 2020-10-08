@@ -9,7 +9,7 @@
         <div id="wrapper">
 
             <!-- Sidebar -->
-            <ul class="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <ul class="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion pl-2" id="accordionSidebar">
 
                 <!-- Sidebar - Brand -->
                 <a class="sidebar-brand d-flex align-items-center justify-content-center"
@@ -58,7 +58,6 @@
                     {% else %}
                 <li class="nav-item">
                     {% endif %}
-
                     <a class="nav-link" href="{% url 'blog:dashboard_view_post_edit' user.username %}">
                         <i class="fas fa-fw fa-edit"></i>
                         <span>Edit</span></a>
@@ -177,16 +176,11 @@
                         <!-- Topbar Navbar -->
                         <ul class="navbar-nav ml-auto">
 
-                            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-
-
-                            <!-- Nav Item - Alerts -->
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <a class="nav-link dropdown-toggle"
                                     href="{% url 'blog:dashboard_request' user.username %}" id="alertsDropdown"
                                     role="button" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-bell fa-fw"></i>
-                                    <!-- Counter - Alerts -->
                                     <span class="badge badge-danger badge-counter"></span>
                                 </a>
                             </li>
@@ -219,16 +213,11 @@
 
                 </div>
                 <!-- End of Main Content -->
-
-                
             </div>
             <!-- End of Content Wrapper -->
-
         </div>
         <!-- End of Page Wrapper -->
-
         <!-- Scroll to Top Button-->
-
         </dir>
     </div>
 </div>

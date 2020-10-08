@@ -12,6 +12,15 @@
         <h1 class="h3 mb-0 text-gray-800">Blogger's Dashboard</h1>
     </div>
 
+    <div class="col-md-9 alert alert-warning alert-dismissible fade show" role="alert">
+        <strong></strong><span class="icon-info-circle"></span></strong> Viewing this dashboard on mobile device may present some user experience issues. 
+        Please bear with us, while we fix those issues. Thank you
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+
     <!-- Content Row -->
     <div class="container bootstrap snippets bootdey mb-4">
         <div class="col-md-12">
@@ -46,11 +55,32 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 col-sm-4 col-xs-4 inlinestats-col">
-                                Location: <span class="icon-map-marker"></span>  <strong>{{ profile_gist.get_location_display }}</strong>
+                            <div class="col-md-4 col-sm-4 col-xs-4 inlinestats-col">
+                                Location: <span class="icon-map-marker"></span>
+                                <strong>{{ user.profile.get_location_display }}</strong>
                             </div>
-                            <div class="col-md-6 col-sm-4 col-xs-4 inlinestats-col">
-                                Date Registered: <span class="mx-1 icon-calendar"></span> <strong>{{user.date_joined}}</strong>
+                            <div class="col-md-4 col-sm-4 col-xs-4 inlinestats-col">
+                                {% if user.profile.visibility %}
+                                Socials:
+                                {% if user.profile.linkedin %}
+                                <a href="{{ user.profile.linkedin }}"><span
+                                        class="mx-1 icon-linkedin-square"></span></a>
+                                {% endif %}
+                                {% if user.profile.twitter %}
+                                <a href="{{ user.profile.twitter }}"><span class="mx-1 icon-twitter"></span></a>
+                                {% endif %}
+                                {% if user.profile.github %}
+                                <a href="{{ user.profile.github }}"><span class="mx-1 icon-github-square"></span></a>
+                                {% endif %}
+                                {% if user.profile.whatsapp %}
+                                <a href="{{ user.profile.whatsapp }}"><span class="mx-1 icon-whatsapp"></span></a>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-4 col-sm-4 col-xs-4 inlinestats-col">
+                                Date Registered: <span class="mx-1 icon-calendar"></span>
+                                <strong>{{user.date_joined}}</strong>
                             </div>
                         </div>
                     </div>

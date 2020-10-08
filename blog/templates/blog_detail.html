@@ -59,9 +59,7 @@
                         </span>
                     </div>
                 </div>
-                {% if settings.DEBUG is False %}
-                Hello
-                {% endif %}
+
                 <p>{{ post.body | safe }}</p>
 
                 <div class="pt-5">
@@ -80,7 +78,7 @@
                 </div>
 
                 <div class="">
-                    <div class="ml-md-auto top-social d-none d-lg-inline-block">
+                    <div class="col-md-12">
                         Let Someone know
                         <div class="row">
                             <div class="col-md-3">
@@ -142,7 +140,6 @@
                                         alt="Image placeholder">
                                     {% else %}
                                     <img src="{% static 'images/default_image.jpg' %}" alt="Image placeholder">
-                                    dkjfkhsdk
                                     {% endif %}
                                 </div>
                                 <div class="comment-body">
@@ -268,7 +265,9 @@
                     </div>
                     {% endif %}
                 </div>
-                <hr>
+                <div class="container">
+                    <hr class="col-md-6">
+                </div>
                 <div class="container bootstrap snippets bootdey mb-4">
                     <div class="col-md-12">
                         <div class="profile-container">
@@ -279,27 +278,72 @@
                             </div>
                             <div class="profile-header row">
                                 <div class="col-md-4 col-sm-12 text-center">
-                                    <img src="{{ post.author.profile.cover_image.url }}" alt="" class="header-avatar">
+                                    <img src="{{ post.author.profile.cover_image.url }}" alt="Author's Image" class="header-avatar">
                                 </div>
                                 <div class="col-md-8 col-sm-12 profile-info pl-2">
-                                    <div class="header-fullname">{{post.author.get_full_name}}</div>
+                                    <a href="{% url 'blog:blog_author' post.author %}">
+                                        <div class="header-fullname">{{post.author.get_full_name}}</div>
+                                    </a>
                                     <div class="header-information">
                                         <strong>{{post.author.profile.bio}}</strong>
                                     </div>
+
+                                    {% if post.author.profile.visibility %}
+                                    {% if post.author.profile.linkedin %}
+                                    <a href="{{ post.author.profile.linkedin }}"><span
+                                            class="mx-1 icon-linkedin-square"></span></a>
+                                    {% endif %}
+                                    {% if post.author.profile.twitter %}
+                                    <a href="{{ post.author.profile.twitter }}"><span
+                                            class="mx-1 icon-twitter"></span></a>
+                                    {% endif %}
+                                    {% if post.author.profile.github %}
+                                    <a href="{{ post.author.profile.github }}"><span
+                                            class="mx-1 icon-github-square"></span></a>
+                                    {% endif %}
+                                    {% if post.author.profile.whatsapp %}
+                                    <a href="{{ post.author.profile.whatsapp }}"><span
+                                            class="mx-1 icon-whatsapp"></span></a>
+                                    {% endif %}
+                                    {% endif %}
+                                    <span class="icon-map-marker"></span>
+                                    <strong>{{ post.author.profile.get_location_display }}</strong>
                                 </div>
                             </div>
                             {% if collab_author %}
                             {% for c_a in collab_author %}
                             <div class="profile-header row">
                                 <div class="col-md-4 col-sm-12 text-center">
-                                    <img src="{{ c_a.requested_author.profile.cover_image.url }}" alt=""
+                                    <img src="{{ c_a.requested_author.profile.cover_image.url }}" alt="Author's Image"
                                         class="header-avatar">
                                 </div>
                                 <div class="col-md-8 col-sm-12 profile-info pl-2">
+                                    <a href="{% url 'blog:blog_author' c_a.requested_author %}">
                                     <div class="header-fullname">{{c_a.requested_author.get_full_name}}</div>
+                                    </a>
                                     <div class="header-information">
                                         <strong>{{c_a.requested_author.profile.bio}}</strong>
                                     </div>
+                                    {% if c_a.requested_author.profile.visibility %}
+                                    {% if c_a.requested_author.profile.linkedin %}
+                                    <a href="{{ c_a.requested_author.profile.linkedin }}"><span
+                                            class="mx-1 icon-linkedin-square"></span></a>
+                                    {% endif %}
+                                    {% if c_a.requested_author.profile.twitter %}
+                                    <a href="{{ c_a.requested_author.profile.twitter }}"><span
+                                            class="mx-1 icon-twitter"></span></a>
+                                    {% endif %}
+                                    {% if c_a.requested_author.profile.github %}
+                                    <a href="{{ c_a.requested_author.profile.github }}"><span
+                                            class="mx-1 icon-github-square"></span></a>
+                                    {% endif %}
+                                    {% if c_a.requested_author.profile.whatsapp %}
+                                    <a href="{{ c_a.requested_author.profile.whatsapp }}"><span
+                                            class="mx-1 icon-whatsapp"></span></a>
+                                    {% endif %}
+                                    {% endif %}
+                                    <span class="icon-map-marker"></span>
+                                    <strong>{{ c_a.requested_author.profile.get_location_display }}</strong>
                                 </div>
                             </div>
                             {% endfor %}

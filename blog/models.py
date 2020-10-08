@@ -39,7 +39,7 @@ class Post(models.Model):
     slug = models.SlugField(unique=True, max_length=100, null=True)
     body = RichTextUploadingField()
     created_on = models.DateTimeField(auto_now_add=True)
-    cover_image = models.ImageField(default='big_img_1.jpg', upload_to='images/') 
+    cover_image = models.ImageField(default='teadefault.jpg', upload_to='images/') 
     last_modified = models.DateTimeField(auto_now=True, blank=True)
     published_flag = models.BooleanField(null=True, default=False)
     status = models.CharField(max_length=7, null=True)
@@ -55,7 +55,9 @@ class Post(models.Model):
         return self.title 
 
     # def get_absolute_url(self):
-    #     return reverse('blog_detail', kwargs={'slug': self.slug})
+    #     return reverse('blog:blog_detail', args = [str(self.slug)])
+        # return (kwargs={'slug': self.slug})
+        # return f'/{self.slug}'
     
 class Post_views(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='postview')
@@ -101,29 +103,24 @@ class Newsletter_subcribers(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=200 , null=True, blank=True)
-    location = models.CharField(max_length=30 , choices=COUNTRY, null=True, blank=True)
-    sex = models.CharField(max_length=6 , null=True, blank=True)
-    birth_date = models.DateField(null=True , blank=True)
     email_confirmed = models.BooleanField(default=False)
     number_of_post = models.IntegerField(null=True)
     number_of_views = models.IntegerField(null=True, default=0)
     profile_complete = models.BooleanField(null=True, default=False)
+    birth_date = models.DateField(null=True , blank=True)
+    bio = models.TextField(max_length=200 , null=True, blank=True)
+    sex = models.CharField(max_length=6 , null=True, blank=True)
+    location = models.CharField(max_length=30 , choices=COUNTRY, null=True, blank=True)
     cover_image = models.ImageField(default='default_image.jpg', null=True, upload_to='profile/images/') 
-
-    def __str__(self):
-        return str(self.user)
-
-class Socials(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     linkedin = models.URLField(max_length=80, null=True)
     twitter = models.URLField(max_length=80, null=True)
     github = models.URLField(max_length=80, null=True)
-    whatsapp = models.IntegerField(null=True)
+    whatsapp = models.URLField(null=True)
     visibility = models.BooleanField(null=True, default=False)
 
     def __str__(self):
         return str(self.user)
+
 
 class Collaburating_author(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -157,6 +154,7 @@ class Contact_us(models.Model):
 class Author_request(models.Model):
     username = models.ForeignKey(User, null = True, on_delete = models.SET_NULL, related_name='requst_publisher') 
     title = models.CharField(unique=True, max_length=30 , null=True)
+    encodededpk = models.CharField(unique=True, max_length=5, null=True)
     weight = models.CharField(max_length=10, default='Heavy')
     message = models.CharField(unique=True, max_length=100 , null=True)
     markas_read = models.BooleanField(default=False, null=True)
@@ -181,15 +179,5 @@ def create_user_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
-def create_user_socials(sender, instance, created, **kwargs):
-    if created:
-        Socials.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.socials.save()
-
-@receiver(post_save, sender=User)
-def save_user_socials(sender, instance, **kwargs):
-    instance.socials.save()
-
+    instance.profile.save()

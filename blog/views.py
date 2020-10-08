@@ -7,14 +7,15 @@ from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 from django.urls import resolve
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ValidationError
 import random
 import numpy as np
 import hashlib
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404, redirect
 # from .forms import CommentForm, PostForms, ArticlesForm, BlogForm, PostForms2, TagForm
-from .forms import CommentForm, CommentForm_author, PostForms, PostForms2, SignupForm, ProfileForm, RequestForm, Request_categoryForm, Contact_usForm, SocialsForm
-from .models import Post, Comment, Category, Tags, Newsletter_subcribers, Profile, Post_views, Author_request, Author_request_category, Contact_us, Collaburating_author, Post_history, Socials
+from .forms import CommentForm, CommentForm_author, PostForms, PostForms2, SignupForm, ProfileForm, RequestForm, Request_categoryForm, Contact_usForm
+from .models import Post, Comment, Category, Tags, Newsletter_subcribers, Profile, Post_views, Author_request, Author_request_category, Contact_us, Collaburating_author, Post_history
 from taggit.models import Tag
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from mebbscorner.tasks import notify_user2
@@ -44,52 +45,64 @@ def collaburation_edit_blog(request, slug):
     if request.method == 'POST':
         selected_tags = ''
         if request.user.is_superuser:
-            valid_post = PostForms(instance=post)
+            valid_post = PostForms(request.POST, request.FILES)
         else:
-            valid_post = PostForms2(instance=post)
+            valid_post = PostForms2(request.POST, request.FILES)
         if valid_post.is_valid():
-            title=valid_post.cleaned_data['title']
-            body=valid_post.cleaned_data['body']
-            art_value = request.POST.getlist('categories')
-            read_duration = valid_post.cleaned_data['read_duration']
-            favorite = valid_post.cleaned_data['favorite']
-            status = valid_post.cleaned_data['status']
-            selected_tags = request.POST.get('tag_item')
-            selected_tags = validate_tags(request,Tags,selected_tags)
-            post.title = title
-            post.body = body
-            post.favorite=favorite
-            post.read_duration=read_duration
-            post.status= status
-            post.cover_image = request.FILES['cover_image']
+            try:
+                title=valid_post.cleaned_data['title']
+                body=valid_post.cleaned_data['body']
+                art_value = request.POST.getlist('categories')
+                read_duration = valid_post.cleaned_data['read_duration']
+                favorite = valid_post.cleaned_data['favorite']
+                status = valid_post.cleaned_data['status']
+                selected_tags = request.POST.get('tag_item')
+                selected_tags = validate_tags(request,Tags,selected_tags)
+                post.title = title
+                post.body = body
+                post.favorite=favorite
+                post.read_duration=read_duration
+                post.status= status
+                remove_photo = valid_post.cleaned_data.get('remove_photo')
+                image = valid_post.cleaned_data['cover_image']
+                if image != post.cover_image:
+                    if image != None:
+                        post.cover_image = request.FILES['cover_image']
+                if remove_photo:
+                    post.cover_image = 'IMG_20200503_094546.jpg'
+                post.slug = slugify(post.title)
+                post.save()
+                cat =  Category.objects.filter(posts__slug=slug)
+                for ca in cat:
+                    post.categories.remove(ca)
+                for e in art_value:
+                    cat = Category.objects.filter(name=e)
+                    post.categories.add(*cat)
+                
+                _tag = Tags.objects.filter(tag__slug=slug)
+                for ca in _tag:
+                    post.new_tag.remove(ca)
+                for e in selected_tags:
+                    cat = Tags.objects.filter(name=e)
+                    post.new_tag.add(*cat)
+                Post_history.objects.create(
+                    post=post,
+                    author=request.user,
+                    description= 'Edited',
+                    state='Co Author'
+                ).save()
+                check_profile_state = Profile.objects.get(user=request.user)
+                if check_profile_state.profile_complete != True:
+                    status = 'Draft'
+                    post.save()
 
-            post.slug = slugify(post.title)
-            # post.author = request.user; 
-            post.save()
-            cat =  Category.objects.filter(posts__slug=slug)
-            for ca in cat:
-                post.categories.remove(ca)
-            for e in art_value:
-                cat = Category.objects.filter(name=e)
-                post.categories.add(*cat)
-            
-            _tag = Tags.objects.filter(tag__slug=slug)
-            for ca in _tag:
-                post.new_tag.remove(ca)
-            for e in selected_tags:
-                cat = Tags.objects.filter(name=e)
-                post.new_tag.add(*cat)
-            Post_history.objects.create(
-                post=post,
-                author=request.user,
-                description= 'Edited',
-                state='Co Author'
-            ).save()
-            messages.success(request,'Post have been updated successfully!')
-            if post.published_flag is True and post.status == 'Ready':
-                return redirect('blog:blog_detail', slug=post.slug)
-            else:
-                return redirect('blog:pending_blog_detail', slug=post.slug)
+                messages.success(request,'Post have been updated successfully!')
+                if post.published_flag is True and post.status == 'Ready':
+                    return redirect('blog:blog_detail', slug=post.slug)
+                else:
+                    return redirect('blog:pending_blog_detail', slug=post.slug)
+            except Exception:
+                messages.error(request, valid_post.errors)
     else:
         if request.user.is_superuser:
             form = PostForms(instance=post)
@@ -101,8 +114,6 @@ def collaburation_edit_blog(request, slug):
     content = {
         "bt_highlighted_add_blog": True,
         "form": form,
-        # "post": post,
-        # "articles_list": articles_list,
         "cat_selected": cat,
         "tags": selected_tags,
     }
@@ -127,7 +138,6 @@ def edit_blog(request, slug):
             read_duration = valid_post.cleaned_data['read_duration']
             favorite = valid_post.cleaned_data['favorite']
             status = valid_post.cleaned_data['status']
-            image = valid_post.cleaned_data['cover_image']
             selected_tags = request.POST.get('tag_item')
             selected_tags = validate_tags(request,Tags,selected_tags)
             post.title = title
@@ -135,11 +145,21 @@ def edit_blog(request, slug):
             post.favorite=favorite
             post.read_duration=read_duration
             post.status= status
-            if image != None:
-                post.cover_image = request.FILES['cover_image']
+            remove_photo = valid_post.cleaned_data.get('remove_photo')
+            image = valid_post.cleaned_data['cover_image']
+            if image != post.cover_image:
+                if image != None:
+                    post.cover_image = request.FILES['cover_image']
+            if remove_photo:
+                post.cover_image = 'IMG_20200503_094546.jpg'
             post.slug = slugify(post.title)
             post.author = request.user; 
             post.save()
+            check_profile_state = Profile.objects.get(user=request.user)
+            if check_profile_state.profile_complete != True:
+                status = 'Draft'
+                post.save()
+
             cat =  Category.objects.filter(posts__slug=slug)
             for ca in cat:
                 post.categories.remove(ca)
@@ -174,8 +194,6 @@ def edit_blog(request, slug):
     content = {
         "bt_highlighted_add_blog": True,
         "form": form,
-        # "post": post,
-        # "articles_list": articles_list,
         "cat_selected": cat,
         "tags": selected_tags,
     }
@@ -354,6 +372,7 @@ def user_send_message(request):
                     message = message,
                     weight = 'Heavy' 
                     )
+                    new_request.encodededpk = urlsafe_base64_encode(force_bytes(new_request.id))
                     new_request.save()
                 
                 if options == 'Others':
@@ -368,6 +387,7 @@ def user_send_message(request):
                     weight = 'Flat',
                     message_to = receiver
                     )
+                    new_request.encodededpk = urlsafe_base64_encode(force_bytes(new_request.id))
                     new_request.save()
                 message = 'Message has been sent!'
                 ajax_feedback = True
@@ -780,6 +800,11 @@ def dashboard_add_post(request, author):
                 new_post.slug = slugify(new_post.title)
                 new_post.author = request.user
                 new_post.save()
+                check_profile_state = Profile.objects.get(user=request.user)
+                if check_profile_state.profile_complete != True:
+                    status = 'Draft'
+                    new_post.save()
+
                 for e in art_value:
                     cat = Category.objects.filter(name=e)
                     new_post.categories.add(*cat)
@@ -806,7 +831,7 @@ def dashboard_add_post(request, author):
     else:
         form = PostForms2()
     context = {
-        "bt_highlighted_add_blog": True,
+        "bt_highlighted_add_post": True,
         "form": form,
         "author": author
     }
@@ -854,8 +879,7 @@ def dashboard_messaging(request, author):
     else:
         encap = False
         form = Author_request.objects.filter(weight='Flat', message_to=request.user).order_by("-created_on")
-        request_list = ''
-
+        request_list = Post.objects.filter(author=request.user)
     context = {
       "bt_highlighted_messaging": True,
       "author": author,  
@@ -863,9 +887,36 @@ def dashboard_messaging(request, author):
       "encap": encap,
       "request_list": request_list,
       "form_message": form_message,
-    #   "form_message_two": form_message_two
     }
     return render(request, 'dashboard_messaging.html', context)
+
+@login_required
+def dashboard_opened_message(request, author, uidb64):
+    authorized = False
+    if request.user.is_authenticated:
+        selected_message = Author_request.objects.get(encodededpk=uidb64)
+        if selected_message.weight == 'Heavy' and request.user.is_superuser:
+            opened_selected_message = Author_request.objects.get(encodededpk=uidb64)
+            authorized = True
+            if opened_selected_message.markas_read is False:
+                opened_selected_message.markas_read = True
+                opened_selected_message.approved_by = request.user
+                opened_selected_message.save()
+        elif selected_message.weight == 'Flat':
+            opened_selected_message = Author_request.objects.get(encodededpk=uidb64)
+            authorized = True
+            if opened_selected_message.markas_read is False:
+                opened_selected_message.markas_read = True
+                opened_selected_message.approved_by = request.user
+                opened_selected_message.save()
+        else:
+            authorized = False
+            opened_selected_message = ''
+    context = {
+        'selected_message': opened_selected_message,
+        'bt_highlighted_messaging': True,
+    }
+    return render(request, 'dashboard_opened_message.html', context)
 
 def blog_contact(request):
     form = Contact_usForm()
@@ -945,62 +996,65 @@ def dashboard_authors(request):
 # @transaction.atomic
 @login_required
 def dashboard_profile(request, author):
+    form = SignupForm(instance=request.user)
+    form_two = ProfileForm(instance=request.user.profile)
     if request.user.is_authenticated:
         if request.method == 'POST':
             try:
                 update_user = User.objects.get(id=request.user.id)
                 update_user_two = Profile.objects.get(user_id=request.user.id)
-                update_user_three = Socials.objects.get(user_id=request.user.id)
                 valid_form = SignupForm(request.POST, instance=request.user)
                 valid_form_two = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
-                validate_tags_three = SocialsForm(request.POST, instance=request.user.socials)
-                if valid_form.is_valid() and valid_form_two.is_valid() and valid_form_three.is_valid():
+                if valid_form.is_valid() and valid_form_two.is_valid():
                     update_user.username = valid_form.cleaned_data['username']
                     update_user.email = valid_form.cleaned_data['email']
                     update_user.first_name = valid_form.cleaned_data['first_name']
                     update_user.last_name = valid_form.cleaned_data['last_name']
                     update_user.save()
-                    
                     update_user_two.location = valid_form_two.cleaned_data['location']
-                    cover_image = valid_form_two.cleaned_data['cover_image']
                     update_user_two.birth_date = valid_form_two.cleaned_data['birth_date']
                     update_user_two.bio = valid_form_two.cleaned_data['bio']
-                    sex = valid_form_two.cleaned_data['sex']
-                    if sex != '':
-                        update_user_two.sex = valid_form_two.cleaned_data['sex']
-                    if cover_image == 'default_image.jpg':
-                        pass
-                    else:
-                        if cover_image != None:
-                            update_user_two.cover_image = request.FILES['cover_image']
+                    update_user_two.linkedin = valid_form_two.cleaned_data['linkedin']
+                    update_user_two.twitter = valid_form_two.cleaned_data['twitter']
+                    update_user_two.github = valid_form_two.cleaned_data['github']
+                    update_user_two.whatsapp = valid_form_two.cleaned_data['whatsapp']
+                    update_user_two.visibility = valid_form_two.cleaned_data['visibility']
+                    update_user_two.sex = valid_form_two.cleaned_data['sex']
+                    remove_photo = valid_form_two.cleaned_data.get('remove_photo')
+                    image = valid_form_two.cleaned_data['cover_image']
+                    if image != update_user_two.cover_image:
+                        update_user_two.cover_image = request.FILES['cover_image']
+                    if remove_photo:
+                        update_user_two.cover_image = 'default_image.jpg'
                     update_user_two.save()
 
-                    update_user_three.phone_number = valid_form_two.cleaned_data['phone_number']
-                    update_user_three.linkedin = valid_form_two.cleaned_data['linkedin']
-                    update_user_three.twitter = valid_form_two.cleaned_data['twitter']
-                    update_user_three.github = valid_form_two.cleaned_data['github']
-                    update_user_three.whatsapp = valid_form_two.cleaned_data['whatsapp']
-                    update_user_three.visibility = valid_form_two.cleaned_data['visibility']
-                    update_user_three.save()
+                    if update_user.username != None and update_user.first_name != None and update_user.last_name != None and update_user_two.location != None and update_user_two.bio !=None:
+                        update_user_two.profile_complete = True
+                        update_user_two.save()
+                    else:
+                        update_user_two.profile_complete = False
+                        update_user_two.save()
+
+
                     messages.success(request, "Your account has been successfully updated")
                     return redirect('blog:dashboard_home', request.user)
                 else:
                     messages.error(request, "Something went wrong")
                     form = SignupForm(instance=request.user)
                     form_two = ProfileForm(instance=request.user.profile)
-            except Exception:
-                pass
+            except ValidationError as e:
+                messages.error(request, ValidationError.str(e))
+            except ValueError as e:
+                update_user_two.cover_image = ''
         else:
             form = SignupForm(instance=request.user)
             form_two = ProfileForm(instance=request.user.profile)
-            form_three = SocialsForm(instance=request.user.profile)
         context = {
             "bt_highlighted_profile": True,
             "form": form,
             "form_two": form_two,
-            "form_three": form_three
         }
-    return render(request, 'dashboard_profile.html', context)
+        return render(request, 'dashboard_profile.html', context)
 
 @login_required
 def dashboard_home(request, author):
@@ -1183,7 +1237,7 @@ def blog_detail(request, slug):
                             new_comment.save()
                     messages.success(request, "The comment has been posted successfully")
                     # return HttpResponseRedirect(post.get_absolute_url())
-                    return redirect('blog:blog_detail_legal', slug=post.slug)
+                    return redirect('blog:blog_detail', slug=post.slug)
 
             else:
                 comment_form = CommentForm(data=request.POST)
@@ -1230,6 +1284,7 @@ def blog_detail(request, slug):
         else:
             edit_post = False
     popular_post = Post.objects.filter(published_flag=True, status='Ready').order_by("-number_of_views")[:4]
+    profile_gist = Profile.objects.get(user=post.author)
     context = {
         'collab_author': collab_author,
         'popular_post': popular_post,
@@ -1239,6 +1294,8 @@ def blog_detail(request, slug):
         'comment_form': comment_form,
         'edit_post': edit_post,
         'commentable': commentable,
+        'profile_gist': profile_gist
+
         }
     return render(request, "blog_detail.html", context)
 

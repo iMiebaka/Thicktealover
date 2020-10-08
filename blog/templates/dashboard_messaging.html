@@ -69,24 +69,26 @@
                                     <span class="spinner-border spinner-border-sl" role="status"></span>
                                 </div>
                             </button>
+                            <button type="reset" class="btn btn-danger" id="clear_all">
+                                <span class="icon-format_clear"></span> Reset
+                            </button>
                         </div>
                     </form>
                 </div>
 
-
                 <div class="tab-pane animated--grow-in" id="2">
-                    {% if encap is True %}
+                    {% if form %}
                     <div class="section-title">
                         <span class="caption d-block small">messages</span>
                     </div>
 
                     <div class="dropdown-menu-right shadow " aria-labelledby="alertsDropdown">
                         <h6 class="dropdown-header">
-                            Alerts Center
+                            All Messages
                         </h6>
 
                         {% for list in form %}
-                        <a class="dropdown-item d-flex align-items-center" href="#">
+                        <a class="dropdown-item d-flex align-items-center" href="{% url 'blog:dashboard_opened_message' author=user.username uidb64=list.encodededpk %}">
                             <div class="bio-pic mr-3">
                                 <img src="{{ list.username.profile.cover_image.url  }}" alt="Profile Image"
                                     class="img-fluidid">
@@ -95,24 +97,23 @@
                                 <!-- <div class="text-gray-800">{{ list.username }} </div> -->
                                 <div class="text-gray-800">{{ list.username }} </div>
                                 <div class="small text-gray-500">{{list.created_on}}</div>
+                                {% if list.markas_read %}
+                                <span class="">{{ list.message | truncatechars_html:42 | safe }} </span>
+                                {% else %}
                                 <span class="font-weight-bold">{{ list.message | truncatechars_html:42 | safe }} </span>
+                                {% endif %}
                             </div>
                         </a>
                         {% endfor %}
-                        <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
                     </div>
                     {% else %}
 
-                    {% if request_key %}
-                    <p></p>
-                    {% else %}
                     <div class="text-center d-block">
                         <p class="lead text-gray-800 mb-5">
-                            <h2>Nothing to display</h2>
+                            <h2>No Message to display</h2>
                         </p>
                         <p class="text-gray-500 mb-0">Do check back occassionally </p>
                     </div>
-                    {% endif %}
                     {% endif %}
 
                 </div>
@@ -157,6 +158,10 @@
         }
     });
 
+    $('#clear_all').click(function(){
+        $("#row_reciever").attr("hidden", true);
+        console.log('Clear');
+    })
 
     $("#user_send_message").submit(function (e) {
         e.preventDefault();

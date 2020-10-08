@@ -12,7 +12,16 @@
                 </div>
                 <form method="POST" class="register-form" id="register-form">
                     {% csrf_token %}
-
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class=" col-md-6 alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                        <strong></strong><span class="icon-info-circle"></span></strong> {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="name"><i class="zmdi zmdi-account material-icons-name"></i></label>
@@ -36,13 +45,6 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 form-group">
-                            <label for="phone"><i class="zmdi"></i></label>
-                            <input type="tel" name="phone_number" id="phone_number" required
-                                class="form-control form-control-lg" placeholder="Your phone number" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 form-group">
                             <label for="email"><i class="zmdi zmdi-email"></i></label>
                             <input type="email" name="email" id="email" required class="form-control form-control-lg"
                                 placeholder="Your Email" />
@@ -51,15 +53,19 @@
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="pass"><i class="zmdi zmdi-lock"></i></label>
-                            <input type="password" name="pass" id="pass" class="form-control form-control-lg"
-                                placeholder="Password" />
+                            <div class="input-group">
+                                <input type="password" name="pass" id="pass" class="form-control form-control-lg"
+                                    placeholder="Password" />
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="re-pass"><i class="zmdi zmdi-lock-outline"></i></label>
-                            <input type="password" name="re_pass" id="re_pass" class="form-control form-control-lg"
-                                placeholder="Repeat your password" />
+                            <div class="input-group">
+                                <input type="password" name="re_pass" id="re_pass" class="form-control form-control-lg"
+                                    placeholder="Repeat your password" />
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -149,18 +155,18 @@
             },
             dataType: 'json',
             success: function (data) {
-                            if (data.email_is_taken) {
-                                // alert("A user with this username already exists.");
-                                Swal.fire({
-                                    position: 'top-end',
-                                    icon: 'error',
-                                    title: 'Email does exist',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                })
-                                $("#signup").attr("disabled", true);
-                            }
-                            else {
+                if (data.email_is_taken) {
+                    // alert("A user with this username already exists.");
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Email does exist',
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    $("#signup").attr("disabled", true);
+                }
+                else {
                     $('#signup').removeAttr("disabled");
                 }
 

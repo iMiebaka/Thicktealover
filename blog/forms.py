@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Comment, Post, Category, Tags, Author_request, Author_request_category, Contact_us, Collaburating_author, Profile, Socials
+from .models import Comment, Post, Category, Tags, Author_request, Author_request_category, Contact_us, Collaburating_author, Profile
 from .select_options import COUNTRY, REQUEST_DEFAULT, published_choice_admin, published_choice_staff
 from ckeditor.fields import RichTextField
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 class CommentForm(forms.ModelForm):
     name = forms.CharField(required=True, widget= forms.TextInput(attrs={"class": "form-control", "placeholder": "Name" }))
     email = forms.CharField(required=True, widget= forms.TextInput(attrs={"class": "form-control", "placeholder": "Email" }))
-    url = forms.CharField(required=False, widget= forms.TextInput(attrs={"class": "form-control", "placeholder": "URL"}))
+    url = forms.URLField(required=False, widget= forms.TextInput(attrs={"class": "form-control", "placeholder": "URL"}))
     body = forms.CharField(required=True, widget= forms.Textarea(attrs={"class": "form-control", "placeholder": "Comment" }))
     class Meta:
         model = Comment
@@ -53,7 +53,9 @@ class PostForms(forms.ModelForm):
     status  = forms.CharField(widget=forms.Select(choices=published_choice_admin, attrs={"class": "form-control form-control-lg col-md-3", 'data-role': "select-dropdown"}))
     favorite = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
     read_duration = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={"class": "form-control col-md-3", "value": "3", "min": "1"}))
-    cover_image = forms.ImageField(required=False)
+    cover_image = forms.ImageField(required=False, error_messages={'invalid':("Image files only")}, widget=forms.FileInput)
+    remove_photo = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+    
     class Meta():
         model = Post
         fields = ('title', 'body', 'read_duration', 'status', 'published_flag', 'favorite', 'categories', 'cover_image')#, 'new_tag' ]
@@ -68,12 +70,13 @@ class PostForms2(forms.ModelForm):
     status  = forms.CharField(widget=forms.Select(choices=published_choice_staff, attrs={"class": "form-control form-control-lg col-md-3", 'data-role': "select-dropdown"}))
     favorite = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
     read_duration = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={"class": "form-control col-md-3", "value": "3", "min": "1"}))
-    cover_image = forms.ImageField(required=False)
+    cover_image = forms.ImageField(required=False, error_messages={'invalid':("Image files only")}, widget=forms.FileInput)
+    remove_photo = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+    
+
     class Meta():
         model = Post
         fields = ('title', 'body', 'read_duration', 'status', 'published_flag', 'favorite', 'categories', 'cover_image')#, 'new_tag' ]
-
-
 
     # def __init__(self, *args, **kwargs):
         # if kwaargs.get('instance'):
@@ -137,29 +140,23 @@ class ProfileForm(forms.ModelForm):
     sex  = forms.CharField(required=False, label='What your gender?', widget=forms.Select(choices=SEX, attrs={"class": "form-control col-md-3"}))
     bio = forms.CharField(required=False, widget=forms.Textarea(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your Biography"}))
     location  = forms.CharField(required=False, widget=forms.Select(choices=COUNTRY, attrs={"class": "form-control form-control-lg", 'data-role': "select-dropdown" }))
-    cover_image = forms.ImageField(required=False)
+    cover_image = forms.ImageField(required=False, error_messages={'invalid':("Image files only")}, widget=forms.FileInput)
     birth_date = forms.CharField(required=False, label='Enter Date of birth?', widget=forms.DateInput(attrs={"class": "form-control form-control-lg", "type": "date", "placeholder": "Enter Date of birth?"}))
+    whatsapp = forms.URLField(required=False, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your WhatsApp qr Address"}))
+    linkedin = forms.URLField(required=False, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your LinkedIn url address"}))
+    twitter = forms.URLField(required=False, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your twitter url address"}))
+    github = forms.URLField(required=False, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your Github Address"}))
+    visibility = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+    remove_photo = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
+     
     class Meta():
         model = Profile
-        fields = ('bio', 'cover_image', 'location', 'birth_date', 'sex')
-
-class SocialsForm(forms.ModelForm):
-    linkedin = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter LinkedIn address"}))
-    whatsapp = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter WhatsApp Contact"}))
-    twitter = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter LinkedIn address"}))
-    github = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Enter LinkedIn address"}))
-    visibility = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={"class": "form-check-input"}))
-    class Meta():
-        model = Socials
-        fields = ('github', 'twitter', 'linkedin', 'whatsapp', 'visibility')
-
+        fields = ('bio', 'cover_image', 'location', 'birth_date', 'sex', 'github', 'twitter', 'linkedin', 'whatsapp', 'visibility')
 
 class Contact_usForm(forms.ModelForm):
-    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your First Name"}))
-    last_name  = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your Last Name" }))
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your Name"}))
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your Email" }))
-    phone_number = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your phone number" }))
     message = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your message" }))
     class Meta():
         model = Contact_us
-        fields = ('first_name', 'last_name', 'email', 'phone_number', 'message')
+        fields = ('first_name', 'email', 'message')

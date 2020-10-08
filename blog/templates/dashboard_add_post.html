@@ -9,7 +9,23 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Add Post</h1>
     </div>
-    <form action="/new/" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
+        {% if user.profile.profile_complete %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong> <span class="icon-info-circle-o"> </span> </strong> The completion of your neccessary profile details, make the blog post
+            publishable
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% else %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong> <span class="icon-info-circle"> </span> </strong> Blog Post will not be published due to incomplete profile.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        <form action="/new/" modelAttribute="api" method="POST" id="form" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             {{ form.title }}

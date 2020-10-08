@@ -12,6 +12,7 @@ urlpatterns = [
     path('ajax/validate_username_signup/', views.validate_username_signup, name='validate_username_signup'),
     path('ajax/validate_email_signup/', views.validate_email_signup, name='validate_email_signup'),
     path("reset_password/", views.password_reset_request, name="password_reset"),
+    path("verify_account/", views.verify_account, name="verify_account"),
     path('reset_password_sent', views.custom_password_reset_done, name='custom_password_reset_done'),
     path('reset/<uidb64>/<token>/',
         auth_views.PasswordResetConfirmView.as_view(template_name='password_reset_confirm.html'), 

@@ -4,39 +4,40 @@
 {% block head_title %} Home {% endblock %}
 {% block page_content %}
 
+<link rel="stylesheet" href="{% static 'css/home-style.css' %}">
 <div class="site-section py-0">
     <div class="owl-carousel hero-slide owl-style">
-        {% for fp in featured_blog %}
-        <div class="site-section">
-            <div class="container">
-                <div class="half-post-entry d-block d-lg-flex bg-light">
-                    <div class="img-bg" style="background-image: url('{{ fp.cover_image.url }}')"></div>
-                    <div class="contents">
-                        <span class="caption">Editor's Pick</span>
-                        <h2><a href="{% url 'blog:blog_detail' slug=fp.slug %}">{{ fp.title }}</a></h2>
-                        <p class="mb-3">{{ fp.body | truncatechars_html:339  | safe }}</p>
-                        <div class="post-meta">
-                            <span class="d-block">
-                                <a href="{% url 'blog:blog_author' fp.author %}">
-                                    {{ fp.author.last_name }}
-                                    {{ fp.author.first_name }}</a>
-                                in
-                                {% for category in fp.categories.all %}
-                                <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
-                                {% endfor %}
-                            </span>
-                            <span class="date-read">{{ fp.created_on.date }} <span class="mx-1">&bullet;</span>
-                                {{ fp.read_duration }} min
-                                read
-                                {% if fp.favorite %}
-                                <span class="icon-star2"></span>
-                                {% endif %}
+            {% for fp in featured_blog %}
+                <div class="site-section">
+                    <div class="container">
+                        <div class="half-post-entry d-block d-lg-flex bg-light">
+                            <div class="img-bg" style="background-image: url('{{ fp.cover_image.url }}')"></div>
+                            <div class="contents">
+                                <span class="caption">Editor's Pick</span>
+                                <h2><a href="{% url 'blog:blog_detail' slug=fp.slug %}">{{ fp.title }}</a></h2>
+                                <p class="mb-3">{{ fp.body | truncatechars_html:339  | safe }}</p>
+                                <div class="post-meta">
+                                    <span class="d-block">
+                                        <a href="{% url 'blog:blog_author' fp.author %}">
+                                            {{ fp.author.last_name }}
+                                            {{ fp.author.first_name }}</a>
+                                        in
+                                        {% for category in fp.categories.all %}
+                                        <a href="{% url 'blog:blog_category' category.name %}">{{ category.name }}</a>
+                                        {% endfor %}
+                                    </span>
+                                    <span class="date-read">{{ fp.created_on.date }} <span class="mx-1">&bullet;</span>
+                                        {{ fp.read_duration }} min
+                                        read
+                                        {% if fp.favorite %}
+                                        <span class="icon-star2"></span>
+                                        {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
     </div>
 </div>
 
@@ -482,22 +483,6 @@
     </div>
 </div>
 
-<div id="myToast" class="toast">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <img src="..." class="rounded mr-2" alt="...">
-            <strong class="mr-auto">Bootstrap</strong>
-            <small>11 mins ago</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="toast-body">
-            Hello World
-        </div>
-    </div>
-
-</div>
 
 {% endblock %}
 
