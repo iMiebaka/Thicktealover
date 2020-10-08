@@ -1285,6 +1285,7 @@ def blog_detail(request, slug):
             edit_post = False
     popular_post = Post.objects.filter(published_flag=True, status='Ready').order_by("-number_of_views")[:4]
     profile_gist = Profile.objects.get(user=post.author)
+    print(post2.sttt)
     context = {
         'collab_author': collab_author,
         'popular_post': popular_post,

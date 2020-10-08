@@ -24,7 +24,7 @@ SECRET_KEY = '!_a%%fk9=z=buj(#&q50rlgqeygp2jqsr&#m&hczbc7$pmu6%7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['thicktealover.herokuapp.com', 'locahost']
+ALLOWED_HOSTS = ['thicktealover.herokuapp.com', 'localhost']
 
 
 # Application definition

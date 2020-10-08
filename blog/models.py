@@ -10,7 +10,8 @@ from django.contrib.auth.models import User
 # from taggit.managers import TaggableManager
 User = settings.AUTH_USER_MODEL
 from .select_options import COUNTRY, REQUEST_DEFAULT, published_choice_admin, published_choice_staff
-
+from io import StringIO
+from html.parser import HTMLParser
 
 
 class Tags(models.Model):
@@ -54,10 +55,30 @@ class Post(models.Model):
     def __str__(self):
         return self.title 
 
+    def strip_tags(self):
+        s = MLStripper()
+        s.feed(self.body)
+        return s.get_data()
+
+    def sttt(self):
+        return self.title 
+        
     # def get_absolute_url(self):
     #     return reverse('blog:blog_detail', args = [str(self.slug)])
         # return (kwargs={'slug': self.slug})
         # return f'/{self.slug}'
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs= True
+        self.text = StringIO()
+    def handle_data(self, d):
+        self.text.write(d)
+    def get_data(self):
+        return self.text.getvalue()
     
 class Post_views(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='postview')
