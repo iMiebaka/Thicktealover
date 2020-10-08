@@ -154,11 +154,9 @@ class ProfileForm(forms.ModelForm):
         fields = ('bio', 'cover_image', 'location', 'birth_date', 'sex', 'github', 'twitter', 'linkedin', 'whatsapp', 'visibility')
 
 class Contact_usForm(forms.ModelForm):
-    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your First Name"}))
-    last_name  = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your Last Name" }))
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your Name"}))
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your Email" }))
-    phone_number = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={"class": "form-control form-control-lg", "placeholder": "Your phone number" }))
     message = forms.CharField(required=True, widget=forms.Textarea(attrs={"class": "form-control form-control-lg", "placeholder": "Enter your message" }))
     class Meta():
         model = Contact_us
-        fields = ('first_name', 'last_name', 'email', 'phone_number', 'message')
+        fields = ('first_name', 'email', 'message')

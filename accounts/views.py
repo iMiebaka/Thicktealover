@@ -30,7 +30,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, get_object_or_404, redirect
 from blog.forms import CommentForm, PostForms2
 from .forms import PasswordResetForm, PasswordResetConfirmViewForm
-from blog.models import Post, Comment, Category, Tags
+from blog.models import Post, Comment, Category, Tags, Profile
 
 
 def login(request):
@@ -43,11 +43,17 @@ def login(request):
             raw_password = request.POST['your_pass']
             user = authenticate(username=username, password=raw_password)
             if user is not None:
-                auth_login(request, user)
-                messages.success(request, "Logged in")
-                return redirect('blog:dashboard_home', author=user)
+                check_mail = Profile.objects.get(user=user).email_confirmed
+                if check_mail is False:
+                    messages.error(request, 'User email is not verified, Please check email for activation link')
+                elif user.is_active is False:
+                    messages.error(request, 'User account in not activated')
+                else:
+                    auth_login(request, user)
+                    messages.success(request, "Logged in")
+                    return redirect('blog:dashboard_home', author=user)
             else:
-                messages.error(request, 'Ops')
+                messages.error(request, 'Invalid Password or account in not activated')
         else:
             pass
     # print(urlsafe_base64_encode(force_bytes(request.user.pk)))
@@ -110,6 +116,40 @@ def logout_view(request):
         logout(request)
         messages.success(request, "Logged out")
         return HttpResponseRedirect("/")
+
+def verify_account(request):
+    if request.method == 'POST':
+        email_verified = None
+        email = request.POST['email']
+        user = User.objects.get(email=email)
+        _check_email = Profile.objects.get(user=user)
+        email_verified = _check_email.email_confirmed
+        if email_verified is False or user.is_active is False:
+            subject = 'Activate Your TTL Account'
+            email_template_name = "validate_email.txt"
+            c = {
+                "email":user.email,
+                'domain':get_current_site(request),
+                'site_name': 'Website',
+                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "user": user,
+                'token': default_token_generator.make_token(user),
+                'protocol': 'http',
+                }
+            email = render_to_string(email_template_name, c)
+            try:
+                send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+                messages.success(request, ('Please Confirm your email to complete registration.'))
+                corespondent = redirect("accounts:email_verification_sent")
+                srt2hash = str(datetime.now()) + 'Engaged'
+                key = hashlib.md5(srt2hash.encode()).hexdigest()
+                corespondent.set_cookie('TTL_EV', key , max_age=600)
+                return corespondent
+
+            except BadHeaderError:
+                return HttpResponse('Invalid header found.')
+    return render (request, 'verify_email.html')
+
 
 def logout_to_login_view(request):
     if request.user.is_authenticated:

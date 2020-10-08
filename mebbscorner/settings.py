@@ -24,7 +24,7 @@ SECRET_KEY = '!_a%%fk9=z=buj(#&q50rlgqeygp2jqsr&#m&hczbc7$pmu6%7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['thicktealover.herokuapp.com', 'locahost']
 
 
 # Application definition
@@ -171,7 +171,6 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
     EMAIL_FILE_PATH = (os.path.join(BASE_DIR, 'sent_emails'))
 else:
-
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_PORT = 587
     EMAIL_HOST_USER = 'futurealex360@gmail.com'

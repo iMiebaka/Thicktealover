@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+
+{% block page_content %}
+<div class="site-section bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title mb-2">
+                    <h2>{% block head_title %} Enter Email for verification {% endblock %}</h2>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="email"><i class="zmdi zmdi-email"></i></label>
+                            <input type="email" name="email" id="email" required class="form-control form-control-lg"
+                                placeholder="Your Email" />
+                        </div>
+                    </div>
+
+                    <div class="col-3 form-group">
+                        <input type="submit" class="btn btn-success py-3 px-5" value="Send verification link">
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

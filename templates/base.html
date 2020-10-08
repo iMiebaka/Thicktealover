@@ -52,10 +52,10 @@
               THICK TEA LOVER
             </a>
             <a href="#" class="ml-auto d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black"><span
-                class="icon-menu h3"></span></a>
+                class="icon-menu h1"></span></a>
           </div>
             {% if user.is_authenticated %}
-            <div class="col-12 col-lg-3 ml-auto d-flex">
+            <div class="col-12 col-lg-3 d-flex">
             <div class="bio-pic mr-3">
               <img src="{{ user.profile.cover_image.url  }}" alt="Profile Image" class="img-fluidid">
             </div>
@@ -65,7 +65,7 @@
             {% endif %}
 
               <form action="{% url 'blog:blog_index_search' %}" method="POST"
-                class="col-12 col-lg-3 ml-auto d-flex">
+                class="col-12 col-lg-3 ml-auto align-items-center">
                 {% csrf_token %}
                 <div class="d-flex">
                   <input type="search" name="search_word" class="form-control" id="search_word"

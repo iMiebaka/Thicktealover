@@ -4,12 +4,6 @@
 
 
 {% block page_content %}
-{% if user.is_authenticated %}
-<!-- <link rel="stylesheet" href="{% static 'css/style_admin.css' %}"> -->
-{% else %}
-<!-- <link rel="stylesheet" href="{% static 'css/style_five.css' %}"> -->
-{% endif %}
-
 <div class="site-section bg-light">
     <div class="container">
         <div class="row">
@@ -17,6 +11,16 @@
                 <div class="section-title mb-5">
                     <h2>{% block head_title %} Login {% endblock %}</h2>
                 </div>
+                {% if messages %}
+                {% for message in messages %}
+                <div class=" col-md-6 alert {{ message.tags }} alert-dismissible fade show" role="alert">
+                    <strong></strong><span class="icon-info-circle"></span></strong> {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+                {% endif %}
                 <form method="post" class="register-form" id="login-form" role="form"
                     action="{% url 'accounts:login' %}">
                     {% csrf_token %}
@@ -33,14 +37,21 @@
                             <div class="input-group">
                                 <input type="password" id="pass" name="your_pass"
                                     class="form-control form-control-lg pwd" placeholder="Password">
-                                <span class="input-group-btn"> <button type="button" class="form-control form-control-lg btn btn-default reveal"> <span class="mx-1 icon-eye" id="password_symbol"></span> </button></span>
+                                <span class="input-group-btn"> <button type="button"
+                                        class="form-control form-control-lg btn btn-default reveal"> <span
+                                            class="mx-1 icon-eye" id="password_symbol"></span> </button></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <a href="{% url 'accounts:password_reset' %}" class="password_reset">Having Issues Logging
-                            in</a>
+                    <div class="row">
+                        <div class="col-md-2 form-group">
+                            <a href="{% url 'accounts:password_reset' %}" class="password_reset">Having Issues Logging in
+                        </div>
+                        <div class="col-md-2 form-group">
+                            </a> <a href="{% url 'accounts:verify_account' %}" class="verify_account"> Verify
+                                Email</a>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-3 form-group">
@@ -78,6 +89,13 @@
         timer: 1500
     })
 </script>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong> <span class="icon-info-circle-o"> </strong> {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 {% endfor %}
 {% endif %}
 
